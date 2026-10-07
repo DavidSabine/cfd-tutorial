@@ -27,6 +27,7 @@ export const ROOT_CSS = `
 	--font-mono: ui-monospace, monospace;
 	--size-chart: 16rem;
 	--size-board: 12rem;
+	--duration-move: 200ms;
 	--shadow-glow: 0 0 0 2px var(--color-primary);
 	box-sizing: border-box;
 	display: flex;
@@ -50,6 +51,9 @@ export const ROOT_CSS = `
 .cfd .items-center { align-items: center; }
 .cfd .justify-between { justify-content: space-between; }
 .cfd .gap-2 { gap: var(--spacing-2); }
+.cfd .p-2 { padding: var(--spacing-2); }
+.cfd .h-full { height: 100%; }
+.cfd .min-w-0 { min-width: 0; }
 .cfd .gap-4 { gap: var(--spacing-4); }
 .cfd .m-0 { margin: 0; }
 .cfd .p-4 { padding: var(--spacing-4); }
@@ -120,5 +124,28 @@ export const ROOT_CSS = `
 	border-color: var(--color-border);
 	background: var(--color-surface);
 	color: var(--color-muted);
+}
+.cfd .card {
+	margin: 0;
+	padding: var(--spacing-2);
+	border-style: solid;
+	border-width: var(--border-width);
+	border-radius: var(--radius-md);
+	background: var(--color-surface);
+	color: var(--color-foreground);
+	font-family: var(--font-mono);
+	font-size: var(--text-sm);
+}
+.cfd .tone-1 { border-color: var(--color-chart-1); }
+.cfd .tone-2 { border-color: var(--color-chart-2); }
+.cfd .tone-3 { border-color: var(--color-chart-3); }
+.cfd .tone-4 { border-color: var(--color-chart-4); }
+.cfd .is-selected { box-shadow: var(--shadow-glow); }
+.cfd .card-move {
+	transition-property: transform;
+	transition-duration: var(--duration-move);
+}
+@media (prefers-reduced-motion: reduce) {
+	.cfd { --duration-move: 0s; }
 }
 `;

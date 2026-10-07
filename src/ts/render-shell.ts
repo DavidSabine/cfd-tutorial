@@ -14,6 +14,7 @@ import {
 	type Playback,
 } from "./playback";
 import type { FlowTable } from "./parse-csv";
+import { renderBoard, type BoardSelection } from "./render-board";
 import type { CfdConfig } from "./resolve-config";
 import { renderTable } from "./render-table";
 import { findSample, SAMPLES } from "./samples";
@@ -90,7 +91,10 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 
 	const chart = el("section", "chart flex-1 min-h-chart rounded-md border border-border");
 	chart.setAttribute("aria-label", "Cumulative flow diagram");
-	const board = el("section", "board flex-1 min-h-board rounded-md border border-border");
+	const board = el(
+		"section",
+		"board flex-1 min-h-board overflow-auto rounded-md border border-border",
+	);
 	board.setAttribute("aria-label", "Kanban board");
 	const stack = el("div", "flex flex-col grow-2 gap-4");
 	stack.append(chart, board);
@@ -106,6 +110,7 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 	}
 	let tableData: FlowTable = loaded.sample.table;
 	let playback: Playback = createPlayback(tableData.rows.length);
+	let selection: BoardSelection = { state: null, cardId: null };
 	renderTable(table, tableData, playback.day);
 	const main = el("div", "flex flex-1 gap-4 p-4");
 	main.append(stack, table);
@@ -129,6 +134,10 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 	}
 	function paint(): void {
 		renderTable(table, tableData, playback.day);
+		renderBoard(board, tableData, playback.day, selection, (next) => {
+			selection = next;
+			paint();
+		});
 		back.disabled = !canStepBack(playback);
 		forward.disabled = !canStepForward(playback);
 		reset.disabled = playback.day === 0 && !playback.playing;
@@ -186,6 +195,7 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 	controls.append(
 		sampleControl(loaded.sample.id, (id) => {
 			tableData = findSample(id).sample.table;
+			selection = { state: null, cardId: null };
 			apply(replaceLength(playback, tableData.rows.length));
 			onResize();
 		}),

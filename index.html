@@ -25,7 +25,11 @@
     select loads one of four embedded CSVs, returns to day 0, and dispatches
     cfd-resize again. Playback starts at day 0. Play advances one day per
     frame (1× is one second). Step and reset pause playback. The current row
-    uses --color-highlight. A day column is the row label. Every other column
+    uses --color-highlight. Cards are synthetic and FIFO: card 1 is the oldest,
+    and it sits in the rightmost state whose reached total includes it. The
+    board shows columns with no cards at day 0. A card slides when its state
+    changes. Clicking a column or a card glows that target on the board.
+    A day column is the row label. Every other column
     is a state, left to right, and the last column is Done.
     Border thickness is the --border-width token. Flex grow is 2 and 1.
 -->
