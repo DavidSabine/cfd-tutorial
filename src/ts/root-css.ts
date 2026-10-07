@@ -6,6 +6,7 @@ export const ROOT_CSS = `
 	--color-border: #e7e5e4;
 	--color-primary: #0f766e;
 	--color-on-primary: #ffffff;
+	--color-highlight: #ccfbf1;
 	--border-width: 1px;
 	--color-chart-1: #0f766e;
 	--color-chart-2: #0369a1;
@@ -93,6 +94,10 @@ export const ROOT_CSS = `
 	top: 0;
 	background: var(--color-surface);
 	color: var(--color-muted);
+}
+.cfd .row-current .cell {
+	background: var(--color-highlight);
+	box-shadow: var(--shadow-glow);
 }
 .cfd .btn {
 	margin: 0;

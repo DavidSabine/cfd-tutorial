@@ -22,9 +22,11 @@
   - The package version is 1.0.0. The embed filename stays cfd-tool.js.
   - The shell is a header (title and brand HTML), a flex row at 2:1 (empty
     chart over empty board, the sample spreadsheet), and a footer. The sample
-    select loads one of four embedded CSVs and dispatches cfd-resize again.
-    Playback controls stay disabled. A day column is the row label. Every other
-    column is a state, left to right, and the last column is Done.
+    select loads one of four embedded CSVs, returns to day 0, and dispatches
+    cfd-resize again. Playback starts at day 0. Play advances one day per
+    frame (1× is one second). Step and reset pause playback. The current row
+    uses --color-highlight. A day column is the row label. Every other column
+    is a state, left to right, and the last column is Done.
     Border thickness is the --border-width token. Flex grow is 2 and 1.
 -->
 <html lang="en">

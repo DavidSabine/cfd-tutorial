@@ -1,3 +1,19 @@
+import {
+	canStepBack,
+	canStepForward,
+	createPlayback,
+	frameMs,
+	parseSpeed,
+	replaceLength,
+	replaceSpeed,
+	resetPlayback,
+	stepBack,
+	stepForward,
+	tick,
+	togglePlay,
+	type Playback,
+} from "./playback";
+import type { FlowTable } from "./parse-csv";
 import type { CfdConfig } from "./resolve-config";
 import { renderTable } from "./render-table";
 import { findSample, SAMPLES } from "./samples";
@@ -22,7 +38,6 @@ function button(label: string, extra = ""): HTMLButtonElement {
 	const node = el("button", extra ? `btn ${extra}` : "btn");
 	node.type = "button";
 	node.textContent = label;
-	node.disabled = true;
 	return node;
 }
 
@@ -44,11 +59,10 @@ function sampleControl(selectedId: string, onChange: (id: string) => void): HTML
 	return label;
 }
 
-function speedControl(): HTMLLabelElement {
+function speedControl(onChange: (value: string) => void): HTMLLabelElement {
 	const label = el("label", "flex items-center gap-2 m-0 text-xs text-muted");
 	label.append("Speed");
 	const select = el("select", "btn");
-	select.disabled = true;
 	for (const [value, text] of SPEEDS) {
 		const option = document.createElement("option");
 		option.value = value;
@@ -56,11 +70,14 @@ function speedControl(): HTMLLabelElement {
 		option.selected = value === "1";
 		select.append(option);
 	}
+	select.addEventListener("change", () => {
+		onChange(select.value);
+	});
 	label.append(select);
 	return label;
 }
 
-export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () => void): void {
+export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () => void): () => void {
 	const header = el(
 		"header",
 		"flex items-center justify-between gap-4 border-b px-4 py-3",
@@ -87,24 +104,89 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 	if (loaded.usedFallback) {
 		console.warn(`CFD: unknown sample "${config.sample}". Showing ${loaded.sample.label}.`);
 	}
-	renderTable(table, loaded.sample.table);
+	let tableData: FlowTable = loaded.sample.table;
+	let playback: Playback = createPlayback(tableData.rows.length);
+	renderTable(table, tableData, playback.day);
 	const main = el("div", "flex flex-1 gap-4 p-4");
 	main.append(stack, table);
 
+	const back = button("Back");
+	const play = button("Play", "btn-primary");
+	const forward = button("Forward");
+	const reset = button("Reset");
+	const status = el("p", "playhead m-0 text-xs text-muted");
+	status.setAttribute("aria-live", "polite");
 	const player = el("div", "flex flex-wrap items-center gap-2");
 	player.setAttribute("role", "group");
 	player.setAttribute("aria-label", "Playback");
-	player.append(
-		button("Back"),
-		button("Play", "btn-primary"),
-		button("Forward"),
-		button("Reset"),
-		speedControl(),
-	);
+
+	let timer: ReturnType<typeof setInterval> | undefined;
+	function clearTimer(): void {
+		if (timer !== undefined) {
+			clearInterval(timer);
+			timer = undefined;
+		}
+	}
+	function paint(): void {
+		renderTable(table, tableData, playback.day);
+		back.disabled = !canStepBack(playback);
+		forward.disabled = !canStepForward(playback);
+		reset.disabled = playback.day === 0 && !playback.playing;
+		play.disabled = !playback.playing && !canStepForward(playback);
+		play.textContent = playback.playing ? "Pause" : "Play";
+		status.textContent = `Day ${playback.day} of ${playback.length}`;
+		const current = table.querySelector("tr[aria-current='true']");
+		if (current instanceof HTMLElement) {
+			current.scrollIntoView({ block: "nearest" });
+		}
+	}
+	function syncTimer(): void {
+		clearTimer();
+		if (!playback.playing) {
+			return;
+		}
+		const speed = playback.speed;
+		timer = setInterval(() => {
+			playback = tick(playback);
+			paint();
+			if (!playback.playing) {
+				clearTimer();
+			}
+		}, frameMs(speed));
+	}
+	function apply(next: Playback): void {
+		playback = next;
+		syncTimer();
+		paint();
+	}
+	function applySpeed(value: string): void {
+		const speed = parseSpeed(value);
+		if (speed === undefined) {
+			return;
+		}
+		apply(replaceSpeed(playback, speed));
+	}
+
+	player.append(back, play, forward, reset, status, speedControl(applySpeed));
+	back.addEventListener("click", () => {
+		apply(stepBack(playback));
+	});
+	forward.addEventListener("click", () => {
+		apply(stepForward(playback));
+	});
+	reset.addEventListener("click", () => {
+		apply(resetPlayback(playback));
+	});
+	play.addEventListener("click", () => {
+		apply(togglePlay(playback));
+	});
+	paint();
+
 	const controls = el("div", "flex flex-wrap items-center gap-4");
 	controls.append(
 		sampleControl(loaded.sample.id, (id) => {
-			renderTable(table, findSample(id).sample.table);
+			tableData = findSample(id).sample.table;
+			apply(replaceLength(playback, tableData.rows.length));
 			onResize();
 		}),
 		player,
@@ -119,4 +201,5 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 	footer.append(controls, copyright);
 
 	root.append(header, main, footer);
+	return clearTimer;
 }

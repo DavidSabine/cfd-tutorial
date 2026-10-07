@@ -7,6 +7,7 @@ const SHORT_PX = 480;
 
 const startupConfig = resolveConfig(window.CFD_CONFIG);
 const cancelPending = new WeakMap<HTMLElement, () => void>();
+let disposeShell: (() => void) | undefined;
 
 function scheduleReport(container: HTMLElement, report: () => void): void {
 	cancelPending.get(container)?.();
@@ -26,6 +27,8 @@ function scheduleReport(container: HTMLElement, report: () => void): void {
 }
 
 function render(config: CfdConfig): void {
+	disposeShell?.();
+	disposeShell = undefined;
 	let match: Element | null;
 	try {
 		match = document.querySelector(config.container);
@@ -49,7 +52,7 @@ function render(config: CfdConfig): void {
 	const root = document.createElement("div");
 	root.className = "cfd";
 	container.append(root);
-	renderShell(root, config, () => {
+	disposeShell = renderShell(root, config, () => {
 		container.dispatchEvent(
 			new CustomEvent("cfd-resize", {
 				bubbles: true,

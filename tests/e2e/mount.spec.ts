@@ -30,11 +30,12 @@ test("mounts the shell and reports height", async ({ page }) => {
 	await expect(page.getByRole("region", { name: "Cumulative flow diagram" })).toBeVisible();
 	await expect(page.getByRole("region", { name: "Kanban board" })).toBeVisible();
 	await expect(page.getByRole("region", { name: "Data table" })).toBeVisible();
-	await expect(page.getByRole("button", { name: "Play" })).toBeDisabled();
+	await expect(page.getByRole("button", { name: "Play" })).toBeEnabled();
 	await expect(page.getByRole("button", { name: "Back" })).toBeDisabled();
-	await expect(page.getByRole("button", { name: "Forward" })).toBeDisabled();
+	await expect(page.getByRole("button", { name: "Forward" })).toBeEnabled();
 	await expect(page.getByRole("button", { name: "Reset" })).toBeDisabled();
-	await expect(page.getByRole("combobox", { name: "Speed" })).toBeDisabled();
+	await expect(page.getByRole("combobox", { name: "Speed" })).toBeEnabled();
+	await expect(page.getByText("Day 0 of 16", { exact: true })).toBeVisible();
 	await expect(page.getByRole("combobox", { name: "Sample" })).toHaveValue("balanced-flow");
 	await expect(page.getByRole("columnheader", { name: "Done" })).toBeVisible();
 	await expect(page.locator("#cfd-tool .sheet tbody tr")).toHaveCount(16);

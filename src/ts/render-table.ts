@@ -9,7 +9,7 @@ function el<T extends keyof HTMLElementTagNameMap>(
 	return node;
 }
 
-export function renderTable(host: HTMLElement, table: FlowTable): void {
+export function renderTable(host: HTMLElement, table: FlowTable, activeDay: number): void {
 	const grid = el("table", "w-full grid-table");
 	const head = el("thead", "");
 	const headRow = el("tr", "");
@@ -24,8 +24,12 @@ export function renderTable(host: HTMLElement, table: FlowTable): void {
 	head.append(headRow);
 
 	const body = el("tbody", "");
-	for (const row of table.rows) {
-		const tr = el("tr", "");
+	for (const [index, row] of table.rows.entries()) {
+		const current = activeDay === index + 1;
+		const tr = el("tr", current ? "row-current" : "");
+		if (current) {
+			tr.setAttribute("aria-current", "true");
+		}
 		const day = el("td", "cell text-left");
 		day.textContent = row.day;
 		tr.append(day);
