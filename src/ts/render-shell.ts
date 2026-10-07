@@ -3,6 +3,7 @@ import {
 	canStepForward,
 	createPlayback,
 	frameMs,
+	goToDay,
 	parseSpeed,
 	replaceLength,
 	replaceSpeed,
@@ -14,10 +15,17 @@ import {
 	type Playback,
 } from "./playback";
 import type { FlowTable } from "./parse-csv";
-import { renderBoard, type BoardSelection } from "./render-board";
+import { renderBoard } from "./render-board";
+import { renderChart } from "./render-chart";
 import type { CfdConfig } from "./resolve-config";
 import { renderTable } from "./render-table";
 import { findSample, SAMPLES } from "./samples";
+
+type Glow = {
+	day: number | null;
+	state: number | null;
+	cardId: number | null;
+};
 
 const SPEEDS = [
 	["0.5", "0.5×"],
@@ -60,6 +68,17 @@ function sampleControl(selectedId: string, onChange: (id: string) => void): HTML
 	return label;
 }
 
+function hideControl(onChange: (hidden: boolean) => void): HTMLLabelElement {
+	const label = el("label", "flex items-center gap-2 m-0 text-xs text-muted");
+	const input = el("input", "m-0");
+	input.type = "checkbox";
+	input.addEventListener("change", () => {
+		onChange(input.checked);
+	});
+	label.append(input, "Hide done");
+	return label;
+}
+
 function speedControl(onChange: (value: string) => void): HTMLLabelElement {
 	const label = el("label", "flex items-center gap-2 m-0 text-xs text-muted");
 	label.append("Speed");
@@ -89,7 +108,7 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 	brand.innerHTML = config.brand;
 	header.append(title, brand);
 
-	const chart = el("section", "chart flex-1 min-h-chart rounded-md border border-border");
+	const chart = el("section", "chart flex flex-col flex-1 min-h-chart rounded-md border border-border");
 	chart.setAttribute("aria-label", "Cumulative flow diagram");
 	const board = el(
 		"section",
@@ -110,8 +129,8 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 	}
 	let tableData: FlowTable = loaded.sample.table;
 	let playback: Playback = createPlayback(tableData.rows.length);
-	let selection: BoardSelection = { state: null, cardId: null };
-	renderTable(table, tableData, playback.day);
+	let hideDone = false;
+	let selection: Glow = { day: null, state: null, cardId: null };
 	const main = el("div", "flex flex-1 gap-4 p-4");
 	main.append(stack, table);
 
@@ -132,12 +151,37 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 			timer = undefined;
 		}
 	}
+	function choose(next: Glow, jump: boolean): void {
+		selection = next;
+		if (jump && next.day !== null && next.day !== playback.day) {
+			apply(goToDay(playback, next.day));
+			return;
+		}
+		paint();
+	}
 	function paint(): void {
-		renderTable(table, tableData, playback.day);
-		renderBoard(board, tableData, playback.day, selection, (next) => {
-			selection = next;
-			paint();
+		renderChart(chart, root, tableData, playback.day, hideDone, selection.state, (pick) => {
+			choose({ day: pick.day, state: pick.state, cardId: null }, true);
 		});
+		renderTable(table, tableData, playback.day, selection, (pick) => {
+			choose({ day: pick.day, state: pick.state, cardId: null }, true);
+		});
+		renderBoard(
+			board,
+			tableData,
+			playback.day,
+			{ state: selection.state, cardId: selection.cardId },
+			(next) => {
+				choose(
+					{
+						day: playback.day > 0 ? playback.day : null,
+						state: next.state,
+						cardId: next.cardId,
+					},
+					false,
+				);
+			},
+		);
 		back.disabled = !canStepBack(playback);
 		forward.disabled = !canStepForward(playback);
 		reset.disabled = playback.day === 0 && !playback.playing;
@@ -195,8 +239,13 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 	controls.append(
 		sampleControl(loaded.sample.id, (id) => {
 			tableData = findSample(id).sample.table;
-			selection = { state: null, cardId: null };
+			selection = { day: null, state: null, cardId: null };
 			apply(replaceLength(playback, tableData.rows.length));
+			onResize();
+		}),
+		hideControl((hidden) => {
+			hideDone = hidden;
+			paint();
 			onResize();
 		}),
 		player,

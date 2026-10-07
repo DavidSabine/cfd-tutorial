@@ -42,6 +42,11 @@ export function stepForward(playback: Playback): Playback {
 	};
 }
 
+export function goToDay(playback: Playback, day: number): Playback {
+	const clamped = Math.min(playback.length, Math.max(0, Math.trunc(day)));
+	return { ...playback, playing: false, day: clamped };
+}
+
 export function resetPlayback(playback: Playback): Playback {
 	return { ...playback, playing: false, day: 0 };
 }

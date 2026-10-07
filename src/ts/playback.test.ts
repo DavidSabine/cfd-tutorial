@@ -2,6 +2,7 @@ import { expect, test } from "vitest";
 import {
 	createPlayback,
 	frameMs,
+	goToDay,
 	replaceLength,
 	stepBack,
 	stepForward,
@@ -40,6 +41,13 @@ test("a new sample returns to day 0 and keeps the speed", () => {
 		playing: false,
 		speed: 4,
 	});
+});
+
+test("jumping to a day pauses playback", () => {
+	const playing = { ...createPlayback(16), day: 4, playing: true, speed: 2 as const };
+	expect(goToDay(playing, 2)).toEqual({ day: 2, length: 16, playing: false, speed: 2 });
+	expect(goToDay(playing, -3).day).toBe(0);
+	expect(goToDay(playing, 40).day).toBe(16);
 });
 
 test("1× waits one second", () => {

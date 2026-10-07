@@ -7,7 +7,7 @@ test("steps, pauses, and resets the playhead", async ({ page }) => {
 	await expect(page.getByText("Day 2 of 16", { exact: true })).toBeVisible();
 	await expect(page.locator("#cfd-tool tbody tr[aria-current='true'] td").first()).toHaveText("2");
 
-	await page.getByRole("button", { name: "Back" }).click();
+	await page.getByRole("button", { name: "Back", exact: true }).click();
 	await expect(page.getByText("Day 1 of 16", { exact: true })).toBeVisible();
 	await expect(page.getByRole("button", { name: "Play" })).toBeVisible();
 

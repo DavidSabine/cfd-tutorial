@@ -20,18 +20,25 @@
     where the script src is cfd-tool.js. pnpm watch rebuilds the bundle and does
     not copy embed.html again; run pnpm build after editing that file.
   - The package version is 1.0.0. The embed filename stays cfd-tool.js.
-  - The shell is a header (title and brand HTML), a flex row at 2:1 (empty
-    chart over empty board, the sample spreadsheet), and a footer. The sample
-    select loads one of four embedded CSVs, returns to day 0, and dispatches
-    cfd-resize again. Playback starts at day 0. Play advances one day per
-    frame (1× is one second). Step and reset pause playback. The current row
-    uses --color-highlight. Cards are synthetic and FIFO: card 1 is the oldest,
-    and it sits in the rightmost state whose reached total includes it. The
-    board shows columns with no cards at day 0. A card slides when its state
-    changes. Clicking a column or a card glows that target on the board.
-    A day column is the row label. Every other column
-    is a state, left to right, and the last column is Done.
-    Border thickness is the --border-width token. Flex grow is 2 and 1.
+  - The shell is a header (title and brand HTML), a flex row at 2:1 (chart
+    over board, the sample spreadsheet), and a footer. The sample select loads
+    one of four embedded CSVs, returns to day 0, clears the glow, and dispatches
+    cfd-resize again. It does not reset Hide done. Playback starts at day 0.
+    Play advances one day per frame (1× is one second). Step, reset, and a day
+    jump pause playback. The current row uses --color-highlight. Cards are
+    synthetic and FIFO: card 1 is the oldest, and it sits in the rightmost
+    state whose reached total includes it. The board shows columns with no
+    cards at day 0. A card slides when its state changes. The chart is empty
+    at day 0. From day 1 it stacks one rectangle per state per day through the
+    playhead, Done on the axis, in a 0–100 viewBox inset to 8,6–98,92. X slots
+    cover the whole sample. Y uses the tallest visible total in the sample.
+    Band colors are --color-chart-1 through 4, read from the root's computed
+    style. Hide done drops the Done band on the chart only and dispatches
+    cfd-resize. Click a band, a count, or a card to share one glow on
+    {day, state}. Clicking a day jumps the playhead. A day-label click clears
+    the state glow. A day column is the row label. Every other column is a
+    state, left to right, and the last column is Done. Border thickness is
+    the --border-width token. Flex grow is 2 and 1.
 -->
 <html lang="en">
 

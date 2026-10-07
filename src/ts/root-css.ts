@@ -141,6 +141,16 @@ export const ROOT_CSS = `
 .cfd .tone-3 { border-color: var(--color-chart-3); }
 .cfd .tone-4 { border-color: var(--color-chart-4); }
 .cfd .is-selected { box-shadow: var(--shadow-glow); }
+.cfd .cell-selected { box-shadow: var(--shadow-glow); }
+.cfd .hit { cursor: pointer; }
+.cfd .plot {
+	display: block;
+	flex: 1 1 auto;
+	width: 100%;
+	height: 100%;
+	min-height: 0;
+}
+.cfd .band { cursor: pointer; }
 .cfd .card-move {
 	transition-property: transform;
 	transition-duration: var(--duration-move);
