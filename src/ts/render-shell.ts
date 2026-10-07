@@ -1,4 +1,6 @@
 import type { CfdConfig } from "./resolve-config";
+import { renderTable } from "./render-table";
+import { findSample, SAMPLES } from "./samples";
 
 const SPEEDS = [
 	["0.5", "0.5×"],
@@ -24,6 +26,24 @@ function button(label: string, extra = ""): HTMLButtonElement {
 	return node;
 }
 
+function sampleControl(selectedId: string, onChange: (id: string) => void): HTMLLabelElement {
+	const label = el("label", "flex items-center gap-2 m-0 text-xs text-muted");
+	label.append("Sample");
+	const select = el("select", "btn");
+	for (const sample of SAMPLES) {
+		const option = document.createElement("option");
+		option.value = sample.id;
+		option.textContent = sample.label;
+		option.selected = sample.id === selectedId;
+		select.append(option);
+	}
+	select.addEventListener("change", () => {
+		onChange(select.value);
+	});
+	label.append(select);
+	return label;
+}
+
 function speedControl(): HTMLLabelElement {
 	const label = el("label", "flex items-center gap-2 m-0 text-xs text-muted");
 	label.append("Speed");
@@ -40,7 +60,7 @@ function speedControl(): HTMLLabelElement {
 	return label;
 }
 
-export function renderShell(root: HTMLElement, config: CfdConfig): void {
+export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () => void): void {
 	const header = el(
 		"header",
 		"flex items-center justify-between gap-4 border-b px-4 py-3",
@@ -60,9 +80,14 @@ export function renderShell(root: HTMLElement, config: CfdConfig): void {
 
 	const table = el(
 		"section",
-		"sheet grow-1 min-h-0 rounded-md border border-border font-mono",
+		"sheet grow-1 min-h-0 overflow-auto rounded-md border border-border font-mono",
 	);
 	table.setAttribute("aria-label", "Data table");
+	const loaded = findSample(config.sample);
+	if (loaded.usedFallback) {
+		console.warn(`CFD: unknown sample "${config.sample}". Showing ${loaded.sample.label}.`);
+	}
+	renderTable(table, loaded.sample.table);
 	const main = el("div", "flex flex-1 gap-4 p-4");
 	main.append(stack, table);
 
@@ -76,6 +101,14 @@ export function renderShell(root: HTMLElement, config: CfdConfig): void {
 		button("Reset"),
 		speedControl(),
 	);
+	const controls = el("div", "flex flex-wrap items-center gap-4");
+	controls.append(
+		sampleControl(loaded.sample.id, (id) => {
+			renderTable(table, findSample(id).sample.table);
+			onResize();
+		}),
+		player,
+	);
 
 	const copyright = el("p", "m-0 text-xs text-muted");
 	copyright.textContent = config.copyright;
@@ -83,7 +116,7 @@ export function renderShell(root: HTMLElement, config: CfdConfig): void {
 		"footer",
 		"flex flex-wrap items-center justify-between gap-4 border-t px-4 py-3",
 	);
-	footer.append(player, copyright);
+	footer.append(controls, copyright);
 
 	root.append(header, main, footer);
 }

@@ -75,6 +75,25 @@ export const ROOT_CSS = `
 .cfd .text-lg { font-size: var(--text-lg); }
 .cfd .text-muted { color: var(--color-muted); }
 .cfd .font-mono { font-family: var(--font-mono); }
+.cfd .overflow-auto { overflow: auto; }
+.cfd .w-full { width: 100%; }
+.cfd .text-left { text-align: left; }
+.cfd .nowrap { white-space: nowrap; }
+.cfd .grid-table { width: 100%; border-collapse: collapse; }
+.cfd .cell {
+	padding: var(--spacing-1) var(--spacing-2);
+	border-bottom-style: solid;
+	border-bottom-width: var(--border-width);
+	border-bottom-color: var(--color-border);
+	font-size: var(--text-xs);
+	text-align: right;
+}
+.cfd .sticky-top {
+	position: sticky;
+	top: 0;
+	background: var(--color-surface);
+	color: var(--color-muted);
+}
 .cfd .btn {
 	margin: 0;
 	padding: var(--spacing-2) var(--spacing-3);

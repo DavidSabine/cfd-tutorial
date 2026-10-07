@@ -49,7 +49,14 @@ function render(config: CfdConfig): void {
 	const root = document.createElement("div");
 	root.className = "cfd";
 	container.append(root);
-	renderShell(root, config);
+	renderShell(root, config, () => {
+		container.dispatchEvent(
+			new CustomEvent("cfd-resize", {
+				bubbles: true,
+				detail: { height: root.scrollHeight },
+			}),
+		);
+	});
 
 	let warned = false;
 	scheduleReport(container, () => {

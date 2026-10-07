@@ -35,7 +35,31 @@ test("mounts the shell and reports height", async ({ page }) => {
 	await expect(page.getByRole("button", { name: "Forward" })).toBeDisabled();
 	await expect(page.getByRole("button", { name: "Reset" })).toBeDisabled();
 	await expect(page.getByRole("combobox", { name: "Speed" })).toBeDisabled();
+	await expect(page.getByRole("combobox", { name: "Sample" })).toHaveValue("balanced-flow");
+	await expect(page.getByRole("columnheader", { name: "Done" })).toBeVisible();
+	await expect(page.locator("#cfd-tool .sheet tbody tr")).toHaveCount(16);
 
 	const mountType = await page.evaluate(() => typeof window.CFD?.mount);
 	expect(mountType).toBe("function");
+});
+
+test("switching sample reloads the table and reports height", async ({ page }) => {
+	await page.addInitScript(() => {
+		const target = window as Window & { __cfdHeights?: number[] };
+		target.__cfdHeights = [];
+		document.addEventListener("cfd-resize", (event) => {
+			const height = (event as CustomEvent<{ height: number }>).detail.height;
+			target.__cfdHeights?.push(height);
+		});
+	});
+	await page.goto("/");
+	const readCount = () =>
+		page.evaluate(() => (window as Window & { __cfdHeights?: number[] }).__cfdHeights?.length ?? 0);
+	await expect.poll(readCount).toBeGreaterThan(0);
+	const before = await readCount();
+
+	await page.getByRole("combobox", { name: "Sample" }).selectOption("recovery");
+
+	await expect(page.locator("#cfd-tool .sheet tbody tr")).toHaveCount(14);
+	await expect.poll(readCount).toBeGreaterThan(before);
 });
