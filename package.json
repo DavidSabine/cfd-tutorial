@@ -1,0 +1,28 @@
+{
+	"name": "cfd-tutorial",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"preview": "vite preview",
+		"lint": "biome lint",
+		"typecheck": "tsc --noEmit",
+		"test": "vitest --reporter dot --project=unit --watch",
+		"test:unit:run": "vitest --project=unit --run",
+		"test:e2e:run": "playwright test",
+		"build": "esbuild src/ts/cfd-tool.ts --bundle --outfile=dist/cfd-tool.js --minify --sourcemap --format=iife --target=es2022",
+		"postbuild": "node scripts/stage-embed.mjs",
+		"watch": "node scripts/stage-embed.mjs && esbuild src/ts/cfd-tool.ts --bundle --outfile=dist/cfd-tool.js --minify --sourcemap --format=iife --target=es2022 --watch",
+		"done": "pnpm lint && pnpm typecheck && pnpm test:unit:run && pnpm build && pnpm test:e2e:run"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.5.15",
+		"@playwright/test": "1.63.0",
+		"@types/node": "26.6.4",
+		"esbuild": "0.28.2",
+		"typescript": "7.0.2",
+		"vite": "8.3.3",
+		"vitest": "5.0.3"
+	}
+}

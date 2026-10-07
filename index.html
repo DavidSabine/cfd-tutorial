@@ -1,0 +1,51 @@
+<!doctype html>
+<!--
+  Choices for this teaching tool:
+
+  - Source is TypeScript. esbuild writes the embed as dist/cfd-tool.js (IIFE,
+    minified, with a source map). Vite serves this page in development and is
+    not part of the bundle. Dev dependencies only; the bundle has no framework.
+  - window.CFD_CONFIG is read once when the bundle loads. CFD.mount(override)
+    merges an override onto that snapshot. The only global the bundle adds is
+    window.CFD.
+  - The host supplies one empty element. The bundle appends a style tag and an
+    inner root with class cfd. Every color, size, radius, and font default lives
+    on .cfd. Rules are class selectors under .cfd.
+  - cfd-resize fires on window load, or on a timeout if the document is already
+    loaded, so a listener in a script after the bundle still receives it.
+    detail.height is the inner root's scrollHeight. This stub has no intrinsic
+    content, so an unsized host container reports 0 until the shell has height.
+  - Below 640×480 the tool still renders and logs one console.warn per mount.
+  - pnpm preview serves dist/. The build copies embed.html to dist/index.html,
+    where the script src is cfd-tool.js. pnpm watch rebuilds the bundle and does
+    not copy embed.html again; run pnpm build after editing that file.
+  - The package version is 1.0.0. The embed filename stays cfd-tool.js.
+  - Samples, the board, the chart, and playback are not in this skeleton.
+-->
+<html lang="en">
+
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Cumulative Flow</title>
+</head>
+
+<body>
+	<div id="cfd-tool" style="height: 640px"></div>
+	<script>
+		window.CFD_CONFIG = {
+			container: "#cfd-tool",
+			brand: "<strong>Your Brand</strong>",
+			copyright: "© 2026 Your Company",
+			sample: "balanced-flow",
+		};
+	</script>
+	<script type="module" src="/src/ts/cfd-tool.ts"></script>
+	<script>
+		document.getElementById("cfd-tool").addEventListener("cfd-resize", (e) => {
+			e.currentTarget.style.height = e.detail.height + "px";
+		});
+	</script>
+</body>
+
+</html>
