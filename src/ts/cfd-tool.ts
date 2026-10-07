@@ -1,4 +1,5 @@
 import { type CfdConfig, type CfdConfigInput, resolveConfig } from "./resolve-config";
+import { renderShell } from "./render-shell";
 import { ROOT_CSS } from "./root-css";
 
 const NARROW_PX = 640;
@@ -48,6 +49,7 @@ function render(config: CfdConfig): void {
 	const root = document.createElement("div");
 	root.className = "cfd";
 	container.append(root);
+	renderShell(root, config);
 
 	let warned = false;
 	scheduleReport(container, () => {

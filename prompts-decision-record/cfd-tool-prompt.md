@@ -1,9 +1,5 @@
 # Grok Build prompt: single-page CFD teaching tool
 
-Paste everything below this line into Grok Build.
-
----
-
 Build a single-page teaching tool that animates a Cumulative Flow Diagram (CFD) alongside a Kanban board and the data table behind them. Trainers use it to show students how flow, WIP, and cycle time relate.
 
 ## Rules (follow verbatim)

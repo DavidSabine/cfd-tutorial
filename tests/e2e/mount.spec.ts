@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("mounts a root and reports height", async ({ page }) => {
+test("mounts the shell and reports height", async ({ page }) => {
 	await page.addInitScript(() => {
 		const target = window as Window & { __cfdHeights?: number[] };
 		target.__cfdHeights = [];
@@ -22,7 +22,19 @@ test("mounts a root and reports height", async ({ page }) => {
 	const height = await page.evaluate(
 		() => (window as Window & { __cfdHeights?: number[] }).__cfdHeights?.[0],
 	);
-	expect(height).toEqual(expect.any(Number));
+	expect(height).toBeGreaterThan(400);
+
+	await expect(page.getByRole("heading", { name: "Cumulative Flow" })).toBeVisible();
+	await expect(page.getByText("Your Brand")).toBeVisible();
+	await expect(page.getByText("© 2026 Your Company")).toBeVisible();
+	await expect(page.getByRole("region", { name: "Cumulative flow diagram" })).toBeVisible();
+	await expect(page.getByRole("region", { name: "Kanban board" })).toBeVisible();
+	await expect(page.getByRole("region", { name: "Data table" })).toBeVisible();
+	await expect(page.getByRole("button", { name: "Play" })).toBeDisabled();
+	await expect(page.getByRole("button", { name: "Back" })).toBeDisabled();
+	await expect(page.getByRole("button", { name: "Forward" })).toBeDisabled();
+	await expect(page.getByRole("button", { name: "Reset" })).toBeDisabled();
+	await expect(page.getByRole("combobox", { name: "Speed" })).toBeDisabled();
 
 	const mountType = await page.evaluate(() => typeof window.CFD?.mount);
 	expect(mountType).toBe("function");

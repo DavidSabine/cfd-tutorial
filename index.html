@@ -13,14 +13,17 @@
     on .cfd. Rules are class selectors under .cfd.
   - cfd-resize fires on window load, or on a timeout if the document is already
     loaded, so a listener in a script after the bundle still receives it.
-    detail.height is the inner root's scrollHeight. This stub has no intrinsic
-    content, so an unsized host container reports 0 until the shell has height.
+    detail.height is the inner root's scrollHeight. The chart and board
+    minimums give that height when the host container is unsized.
   - Below 640×480 the tool still renders and logs one console.warn per mount.
   - pnpm preview serves dist/. The build copies embed.html to dist/index.html,
     where the script src is cfd-tool.js. pnpm watch rebuilds the bundle and does
     not copy embed.html again; run pnpm build after editing that file.
   - The package version is 1.0.0. The embed filename stays cfd-tool.js.
-  - Samples, the board, the chart, and playback are not in this skeleton.
+  - The shell is a header (title and brand HTML), a flex row at 2:1 (empty
+    chart over empty board, empty table), and a footer. Playback controls are
+    disabled. Samples, flow, and playback behavior come in later increments.
+    Border thickness is the --border-width token. Flex grow is 2 and 1.
 -->
 <html lang="en">
 
