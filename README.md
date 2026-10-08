@@ -1,10 +1,16 @@
 # cfd-tutorial
 
-Copyright © 2026 David Sabine. All rights reserved. See [LICENSE](LICENSE).
+Copyright © 2026 David Sabine. All rights reserved. No license is granted to use, copy, modify, or distribute this package except with prior written permission. See [LICENSE](LICENSE).
 
-The teaching tool is one script, `cfd-tutorial.js`. The host page supplies one empty container. The script renders into that container and adds only `window.CFD` to the page. `window.CFD_CONFIG` belongs to the host. Set it before the script loads. The bundle reads it once.
+One browser script. The host sets `window.CFD_CONFIG`, loads the bundle, and listens for `cfd-resize`. The script adds `window.CFD.mount` and reads the config once.
 
-`pnpm build` writes the script to `dist/cfd-tutorial.js`.
+```
+npm install @davidsabine/cfd-tutorial
+```
+
+The built file is `dist/cfd-tutorial-1.0.0.js`. Copy it onto your own server, or point a script tag at `node_modules/@davidsabine/cfd-tutorial/dist/cfd-tutorial-1.0.0.js`. It is an IIFE. A static `import` runs before the config assignment, so load it with a script tag, or set the config and then `await import("@davidsabine/cfd-tutorial")`.
+
+Online demo: https://davesabine.com/cfd-tutorial/demo
 
 ## Embed
 
@@ -19,7 +25,7 @@ The teaching tool is one script, `cfd-tutorial.js`. The host page supplies one e
 		sample: "balanced-flow"
 	};
 </script>
-<script src="cfd-tutorial.js"></script>
+<script src="cfd-tutorial-1.0.0.js"></script>
 
 <script>
 	document.getElementById("cfd-tutorial").addEventListener("cfd-resize", (e) => {

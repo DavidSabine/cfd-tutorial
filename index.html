@@ -2,9 +2,10 @@
 <!--
   Choices for this teaching tool:
 
-  - Source is TypeScript. esbuild writes the embed as dist/cfd-tutorial.js (IIFE,
-    minified, with a source map). Vite serves this page in development and is
-    not part of the bundle. Dev dependencies only; the bundle has no framework.
+  - Source is TypeScript. esbuild writes the embed as
+    dist/cfd-tutorial-<version>.js (IIFE, minified, with a source map). The
+    version comes from package.json. Vite serves this page in development and
+    is not part of the bundle. Dev dependencies only; the bundle has no framework.
   - window.CFD_CONFIG is read once when the bundle loads. CFD.mount(override)
     merges an override onto that snapshot. The only global the bundle adds is
     window.CFD.
@@ -16,10 +17,12 @@
     detail.height is the inner root's scrollHeight. The chart and board
     minimums give that height when the host container is unsized.
   - Below 640×480 the tool still renders and logs one console.warn per mount.
-  - pnpm preview serves dist/. The build copies embed.html to dist/index.html,
-    where the script src is cfd-tutorial.js. pnpm watch rebuilds the bundle and does
-    not copy embed.html again; run pnpm build after editing that file.
-  - The package version is 1.0.0. The embed filename stays cfd-tutorial.js.
+  - pnpm preview serves dist/. The build copies embed.html to dist/index.html
+    and rewrites the script src to cfd-tutorial-<version>.js. pnpm watch
+    rebuilds the bundle and does not copy embed.html again; run pnpm build
+    after editing that file.
+  - The published bundle name includes the package version, for example
+    cfd-tutorial-1.0.0.js. The preview page uses that same name.
   - The shell is a header (title and brand HTML), a flex row at 2:1 (chart
     over board, the sample spreadsheet), and a footer. The sample select loads
     one of four embedded CSVs, returns to day 0, clears the glow, and dispatches

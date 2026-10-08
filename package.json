@@ -1,8 +1,25 @@
 {
-	"name": "cfd-tutorial",
+	"name": "@davidsabine/cfd-tutorial",
 	"version": "1.0.0",
-	"private": true,
+	"description": "Browser embed of the cumulative flow diagram teaching tool.",
+	"license": "UNLICENSED",
+	"author": "David Sabine",
+	"homepage": "https://davesabine.com/cfd-tutorial/demo",
 	"type": "module",
+	"sideEffects": true,
+	"main": "./dist/cfd-tutorial-1.0.0.js",
+	"browser": "./dist/cfd-tutorial-1.0.0.js",
+	"exports": {
+		".": "./dist/cfd-tutorial-1.0.0.js"
+	},
+	"files": [
+		"dist/cfd-tutorial-*.js"
+	],
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org"
+	},
+	"packageManager": "pnpm@11.1.1",
 	"scripts": {
 		"dev": "vite",
 		"preview": "vite preview",
@@ -11,9 +28,8 @@
 		"test": "vitest --reporter dot --project=unit --watch",
 		"test:unit:run": "vitest --project=unit --run",
 		"test:e2e:run": "playwright test",
-		"build": "esbuild src/ts/cfd-tutorial.ts --bundle --outfile=dist/cfd-tutorial.js --minify --sourcemap --format=iife --target=es2022",
-		"postbuild": "node scripts/stage-embed.mjs",
-		"watch": "node scripts/stage-embed.mjs && esbuild src/ts/cfd-tutorial.ts --bundle --outfile=dist/cfd-tutorial.js --minify --sourcemap --format=iife --target=es2022 --watch",
+		"build": "node scripts/build-bundle.mjs",
+		"watch": "node scripts/build-bundle.mjs --watch",
 		"done": "pnpm lint && pnpm typecheck && pnpm test:unit:run && pnpm build && pnpm test:e2e:run"
 	},
 	"devDependencies": {
