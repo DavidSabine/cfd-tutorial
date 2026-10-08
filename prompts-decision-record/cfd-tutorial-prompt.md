@@ -15,7 +15,7 @@ Build a single-page teaching tool that animates a Cumulative Flow Diagram (CFD) 
 
 ## Deliverable
 
-- One HTML file containing the bundle, the four embedded sample CSVs, and minimal default theming through CSS variables. Structure the JS so it can also be lifted out as a standalone `cfd-tool.js` for the script-tag embed below.
+- One HTML file containing the bundle, the four embedded sample CSVs, and minimal default theming through CSS variables. Structure the JS so it can also be lifted out as a standalone `cfd-tutorial.js` for the script-tag embed below.
 - A brief embed README, following the Embed contract section below.
 
 ## Embed contract
@@ -37,20 +37,20 @@ Build a single-page teaching tool that animates a Cumulative Flow Diagram (CFD) 
 ### Minimal embed example (put this in the README)
 
 ```html
-<div id="cfd-tool"></div>
+<div id="cfd-tutorial"></div>
 
 <script>
 	window.CFD_CONFIG = {
-		container: "#cfd-tool",
+		container: "#cfd-tutorial",
 		brand: "<strong>Your Brand</strong>",
 		copyright: "© 2026 Your Company",
 		sample: "balanced-flow"
 	};
 </script>
-<script src="cfd-tool.js"></script>
+<script src="cfd-tutorial.js"></script>
 
 <script>
-	document.getElementById("cfd-tool").addEventListener("cfd-resize", (e) => {
+	document.getElementById("cfd-tutorial").addEventListener("cfd-resize", (e) => {
 		e.currentTarget.style.height = e.detail.height + "px";
 	});
 </script>

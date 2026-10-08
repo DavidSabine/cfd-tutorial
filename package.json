@@ -11,9 +11,9 @@
 		"test": "vitest --reporter dot --project=unit --watch",
 		"test:unit:run": "vitest --project=unit --run",
 		"test:e2e:run": "playwright test",
-		"build": "esbuild src/ts/cfd-tool.ts --bundle --outfile=dist/cfd-tool.js --minify --sourcemap --format=iife --target=es2022",
+		"build": "esbuild src/ts/cfd-tutorial.ts --bundle --outfile=dist/cfd-tutorial.js --minify --sourcemap --format=iife --target=es2022",
 		"postbuild": "node scripts/stage-embed.mjs",
-		"watch": "node scripts/stage-embed.mjs && esbuild src/ts/cfd-tool.ts --bundle --outfile=dist/cfd-tool.js --minify --sourcemap --format=iife --target=es2022 --watch",
+		"watch": "node scripts/stage-embed.mjs && esbuild src/ts/cfd-tutorial.ts --bundle --outfile=dist/cfd-tutorial.js --minify --sourcemap --format=iife --target=es2022 --watch",
 		"done": "pnpm lint && pnpm typecheck && pnpm test:unit:run && pnpm build && pnpm test:e2e:run"
 	},
 	"devDependencies": {

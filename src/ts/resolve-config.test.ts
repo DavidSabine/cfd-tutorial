@@ -3,7 +3,7 @@ import { resolveConfig } from "./resolve-config";
 
 test("fills defaults when config is missing", () => {
 	expect(resolveConfig(undefined)).toEqual({
-		container: "#cfd-tool",
+		container: "#cfd-tutorial",
 		brand: "",
 		copyright: "",
 		sample: "balanced-flow",
@@ -38,7 +38,7 @@ test("falls back when container, sample, or title is blank", () => {
 			copyright: "",
 		}),
 	).toEqual({
-		container: "#cfd-tool",
+		container: "#cfd-tutorial",
 		brand: "",
 		copyright: "",
 		sample: "balanced-flow",

@@ -13,7 +13,7 @@ export type CfdApi = {
 };
 
 const DEFAULT_CONFIG: CfdConfig = {
-	container: "#cfd-tool",
+	container: "#cfd-tutorial",
 	brand: "",
 	copyright: "",
 	sample: "balanced-flow",

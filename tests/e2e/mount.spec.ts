@@ -12,7 +12,7 @@ test("mounts the shell and reports height", async ({ page }) => {
 
 	await page.goto("/");
 
-	await expect(page.locator("#cfd-tool > .cfd")).toHaveCount(1);
+	await expect(page.locator("#cfd-tutorial > .cfd")).toHaveCount(1);
 	await expect
 		.poll(() =>
 			page.evaluate(() => (window as Window & { __cfdHeights?: number[] }).__cfdHeights?.length ?? 0),
@@ -38,7 +38,7 @@ test("mounts the shell and reports height", async ({ page }) => {
 	await expect(page.getByText("Day 0 of 16", { exact: true })).toBeVisible();
 	await expect(page.getByRole("combobox", { name: "Sample" })).toHaveValue("balanced-flow");
 	await expect(page.getByRole("columnheader", { name: "Done" })).toBeVisible();
-	await expect(page.locator("#cfd-tool .sheet tbody tr")).toHaveCount(16);
+	await expect(page.locator("#cfd-tutorial .sheet tbody tr")).toHaveCount(16);
 
 	const mountType = await page.evaluate(() => typeof window.CFD?.mount);
 	expect(mountType).toBe("function");
@@ -61,6 +61,6 @@ test("switching sample reloads the table and reports height", async ({ page }) =
 
 	await page.getByRole("combobox", { name: "Sample" }).selectOption("recovery");
 
-	await expect(page.locator("#cfd-tool .sheet tbody tr")).toHaveCount(14);
+	await expect(page.locator("#cfd-tutorial .sheet tbody tr")).toHaveCount(14);
 	await expect.poll(readCount).toBeGreaterThan(before);
 });

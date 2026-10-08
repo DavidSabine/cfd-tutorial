@@ -11,7 +11,7 @@ test("glows a chart band across the board and table", async ({ page }) => {
 	await expect(page.getByRole("button", { name: "Play", exact: true })).toBeVisible();
 	const board = page.getByRole("region", { name: "Kanban board" });
 	await expect(board.getByRole("group", { name: "Backlog" })).toHaveClass(/is-selected/);
-	await expect(page.locator("#cfd-tool tbody tr").nth(1).locator("td").nth(1)).toHaveClass(
+	await expect(page.locator("#cfd-tutorial tbody tr").nth(1).locator("td").nth(1)).toHaveClass(
 		/cell-selected/,
 	);
 });

@@ -1,8 +1,8 @@
-Here is the incremental plan. Each step is one sitting's worth of cfd-tool.js, and I will stop after each step so you can run it and read it.
+Here is the incremental plan. Each step is one sitting's worth of cfd-tutorial.js, and I will stop after each step so you can run it and read it.
 
 Decisions I will lock in (also written in one comment at the top of index.html)
 
-• One JS source. cfd-tool.js is the bundle. index.html loads it with a script tag, sets window.CFD_CONFIG, and listens for cfd-resize. Samples and default CSS live in the bundle so the embed and the page cannot drift.
+• One JS source. cfd-tutorial.js is the bundle. index.html loads it with a script tag, sets window.CFD_CONFIG, and listens for cfd-resize. Samples and default CSS live in the bundle so the embed and the page cannot drift.
 • Snapshots, not pre-cumulative CSV. A header row, then one integer row per day. A day column is the label. Every other column is a workflow state, left to right on the board. The last column is Done (departure line, and the band the hide toggle removes).
 • Synthetic FIFO cards. The CSV has counts only. Card n (1 = oldest) on day d sits in the rightmost state s whose count, plus every state to its right, is at least n. Play moves the card when that state changes. Cards are not draggable.
 • Playhead starts at day 0. The configured sample is loaded, the table shows every row, and the chart and board are empty until play or step. The table row for the current day is highlighted.
@@ -18,7 +18,7 @@ Files
 ┌─────────────┬─────────────────────────────────────────────────────────────────────────────────┐
 │ File        │ Role                                                                            │
 ├─────────────┼─────────────────────────────────────────────────────────────────────────────────┤
-│ cfd-tool.js │ Bundle: mount, styles, samples, chart, board, table, controls. Sets window.CFD. │
+│ cfd-tutorial.js │ Bundle: mount, styles, samples, chart, board, table, controls. Sets window.CFD. │
 ├─────────────┼─────────────────────────────────────────────────────────────────────────────────┤
 │ index.html  │ Runner page + the ambiguity comment.                                            │
 ├─────────────┼─────────────────────────────────────────────────────────────────────────────────┤
@@ -42,5 +42,8 @@ Steps
 6. Little's Law. Overlay toggle, geometric WIP and cycle-time segments, numeric readout, click-drag window that recomputes those figures for the dragged days only. Resize event fires on toggle and on drag end.
 
 7. README. Script tag, container, config fields, cfd-resize, CSS variable table (variable, Tailwind token, default, what it styles), CSV format, and the minimal embed example from the prompt.
+
+8. webpack.config.js
+
 
 Tokens (defaults set once on .cfd, every visual rule uses var(--…)): --color-surface, --color-foreground, --color-muted, --color-border, --color-primary, --color-chart-1–4, --spacing-1–6, --radius-md, --text-xs/sm/base/lg, --font-sans, --font-mono, --size-chart, --size-board, --shadow-glow. Classes on the markup read like Tailwind utilities (bg-surface, text-muted, border-border, rounded-md).

@@ -2,7 +2,7 @@
 <!--
   Choices for this teaching tool:
 
-  - Source is TypeScript. esbuild writes the embed as dist/cfd-tool.js (IIFE,
+  - Source is TypeScript. esbuild writes the embed as dist/cfd-tutorial.js (IIFE,
     minified, with a source map). Vite serves this page in development and is
     not part of the bundle. Dev dependencies only; the bundle has no framework.
   - window.CFD_CONFIG is read once when the bundle loads. CFD.mount(override)
@@ -17,9 +17,9 @@
     minimums give that height when the host container is unsized.
   - Below 640×480 the tool still renders and logs one console.warn per mount.
   - pnpm preview serves dist/. The build copies embed.html to dist/index.html,
-    where the script src is cfd-tool.js. pnpm watch rebuilds the bundle and does
+    where the script src is cfd-tutorial.js. pnpm watch rebuilds the bundle and does
     not copy embed.html again; run pnpm build after editing that file.
-  - The package version is 1.0.0. The embed filename stays cfd-tool.js.
+  - The package version is 1.0.0. The embed filename stays cfd-tutorial.js.
   - The shell is a header (title and brand HTML), a flex row at 2:1 (chart
     over board, the sample spreadsheet), and a footer. The sample select loads
     one of four embedded CSVs, returns to day 0, clears the glow, and dispatches
@@ -66,18 +66,18 @@
 </head>
 
 <body>
-	<div id="cfd-tool" style="height: 640px"></div>
+	<div id="cfd-tutorial" style="height: 640px"></div>
 	<script>
 		window.CFD_CONFIG = {
-			container: "#cfd-tool",
+			container: "#cfd-tutorial",
 			brand: "<strong>Your Brand</strong>",
 			copyright: "© 2026 Your Company",
 			sample: "balanced-flow",
 		};
 	</script>
-	<script type="module" src="/src/ts/cfd-tool.ts"></script>
+	<script type="module" src="/src/ts/cfd-tutorial.ts"></script>
 	<script>
-		document.getElementById("cfd-tool").addEventListener("cfd-resize", (e) => {
+		document.getElementById("cfd-tutorial").addEventListener("cfd-resize", (e) => {
 			e.currentTarget.style.height = e.detail.height + "px";
 		});
 	</script>
