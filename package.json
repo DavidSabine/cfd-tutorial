@@ -5,6 +5,7 @@
 	"license": "UNLICENSED",
 	"author": "David Sabine",
 	"homepage": "https://davesabine.com/cfd-tutorial/demo",
+	"repository": { "type": "git", "url": "https://github.com/davidsabine/cfd-tutorial" },
 	"type": "module",
 	"sideEffects": true,
 	"main": "./dist/cfd-tutorial-1.0.1.js",
