@@ -14,6 +14,7 @@ import {
 	type Playback,
 } from "./playback";
 import type { FlowTable } from "./parse-csv";
+import { formatLaw, lawWindow, littleLaw, type LawWindow } from "./little-law";
 import { renderBoard } from "./render-board";
 import { renderChart } from "./render-chart";
 import type { CfdConfig } from "./resolve-config";
@@ -67,14 +68,14 @@ function sampleControl(selectedId: string, onChange: (id: string) => void): HTML
 	return label;
 }
 
-function hideControl(onChange: (hidden: boolean) => void): HTMLLabelElement {
+function checkControl(text: string, onChange: (checked: boolean) => void): HTMLLabelElement {
 	const label = el("label", "flex items-center gap-2 m-0 text-xs text-muted");
 	const input = el("input", "m-0");
 	input.type = "checkbox";
 	input.addEventListener("change", () => {
 		onChange(input.checked);
 	});
-	label.append(input, "Hide done");
+	label.append(input, text);
 	return label;
 }
 
@@ -109,6 +110,10 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 
 	const chart = el("section", "chart flex flex-col flex-1 min-h-chart rounded-md border border-border");
 	chart.setAttribute("aria-label", "Cumulative flow diagram");
+	const readout = el("p", "readout m-0 px-2 pt-2 text-xs text-muted");
+	readout.hidden = true;
+	const plot = el("div", "flex flex-col flex-1 min-h-0");
+	chart.append(readout, plot);
 	const board = el(
 		"section",
 		"board flex-1 min-h-board overflow-auto rounded-md border border-border",
@@ -129,6 +134,8 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 	let tableData: FlowTable = loaded.sample.table;
 	let playback: Playback = createPlayback(tableData.rows.length);
 	let hideDone = false;
+	let showLaw = false;
+	let draggedWindow: LawWindow | null = null;
 	let selection: Glow = { day: null, state: null, cardId: null };
 	const main = el("div", "flex flex-1 gap-4 p-4");
 	main.append(stack, table);
@@ -155,9 +162,29 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 		paint();
 	}
 	function paint(): void {
-		renderChart(chart, root, tableData, playback.day, hideDone, selection, (pick) => {
-			choose({ day: pick.day, state: pick.state, cardId: null });
-		});
+		const span = showLaw ? lawWindow(playback.day, draggedWindow) : null;
+		const figures = span === null ? null : littleLaw(tableData, span);
+		readout.hidden = figures === null;
+		readout.textContent = figures === null ? "" : formatLaw(figures);
+		renderChart(
+			plot,
+			root,
+			tableData,
+			playback.day,
+			hideDone,
+			selection,
+			figures === null || span === null ? null : { figures, window: span },
+			(pick) => {
+				choose({ day: pick.day, state: pick.state, cardId: null });
+			},
+			(next, committed) => {
+				draggedWindow = next;
+				paint();
+				if (committed) {
+					onResize();
+				}
+			},
+		);
 		renderTable(table, tableData, playback.day, selection, (pick) => {
 			choose({ day: pick.day, state: pick.state, cardId: null });
 		});
@@ -220,6 +247,7 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 		apply(stepForward(playback));
 	});
 	reset.addEventListener("click", () => {
+		draggedWindow = null;
 		apply(resetPlayback(playback));
 	});
 	play.addEventListener("click", () => {
@@ -232,11 +260,20 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 		sampleControl(loaded.sample.id, (id) => {
 			tableData = findSample(id).sample.table;
 			selection = { day: null, state: null, cardId: null };
+			draggedWindow = null;
 			apply(replaceLength(playback, tableData.rows.length));
 			onResize();
 		}),
-		hideControl((hidden) => {
+		checkControl("Hide done", (hidden) => {
 			hideDone = hidden;
+			paint();
+			onResize();
+		}),
+		checkControl("Little's law", (on) => {
+			showLaw = on;
+			if (!on) {
+				draggedWindow = null;
+			}
 			paint();
 			onResize();
 		}),
