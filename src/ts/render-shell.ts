@@ -155,7 +155,7 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 		paint();
 	}
 	function paint(): void {
-		renderChart(chart, root, tableData, playback.day, hideDone, selection, (pick) => {
+		renderChart(chart, root, tableData, playback.day, hideDone, selection, null, (pick) => {
 			choose({ day: pick.day, state: pick.state, cardId: null });
 		});
 		renderTable(table, tableData, playback.day, selection, (pick) => {

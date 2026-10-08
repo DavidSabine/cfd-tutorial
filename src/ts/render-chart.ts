@@ -1,4 +1,5 @@
 import { bandsFor, chartMax } from "./chart";
+import { littlesLawLines, type LittlesLawLines, type LittlesLawSelection } from "./littles-law";
 import type { FlowTable } from "./parse-csv";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -33,6 +34,10 @@ function yOf(value: number, max: number): number {
 	return BOTTOM - (value / max) * (BOTTOM - TOP);
 }
 
+function xOf(day: number, slot: number): number {
+	return LEFT + (day - 0.5) * slot;
+}
+
 export function renderChart(
 	host: HTMLElement,
 	colorRoot: HTMLElement,
@@ -40,6 +45,7 @@ export function renderChart(
 	playhead: number,
 	hideDone: boolean,
 	selection: { day: number | null; state: number | null },
+	littlesLawSelection: LittlesLawSelection | null,
 	onSelect: (pick: ChartPick) => void,
 ): void {
 	const svg = svgEl("svg");
@@ -92,5 +98,96 @@ export function renderChart(
 		}
 	}
 
+	if (littlesLawSelection !== null) {
+		drawLittlesLaw(
+			svg,
+			littlesLawLines(table, playhead, hideDone, littlesLawSelection),
+			max,
+			slot,
+			token(colorRoot, "--color-foreground"),
+		);
+	}
+
 	host.replaceChildren(svg);
+}
+
+function drawLittlesLaw(
+	svg: SVGSVGElement,
+	lines: LittlesLawLines,
+	max: number,
+	slot: number,
+	color: string,
+): void {
+	const arrival = lines.arrivalRate;
+	if (arrival !== null) {
+		lawLine(
+			svg,
+			"arrivalRate",
+			xOf(arrival.startDay, slot),
+			yOf(arrival.startHeight, max),
+			xOf(arrival.endDay, slot),
+			yOf(arrival.endHeight, max),
+			color,
+			false,
+		);
+	}
+	const departure = lines.departureRate;
+	if (departure !== null) {
+		lawLine(
+			svg,
+			"departureRate",
+			xOf(departure.startDay, slot),
+			yOf(departure.startHeight, max),
+			xOf(departure.endDay, slot),
+			yOf(departure.endHeight, max),
+			color,
+			false,
+		);
+	}
+	const wip = lines.wip;
+	if (wip !== null) {
+		const x = xOf(wip.day, slot);
+		lawLine(svg, "wip", x, yOf(wip.top, max), x, yOf(wip.bottom, max), color, false);
+	}
+	const cycle = lines.approximateCycleTime;
+	if (cycle !== null) {
+		const y = yOf(cycle.height, max);
+		lawLine(
+			svg,
+			"approximateCycleTime",
+			xOf(cycle.startDay, slot),
+			y,
+			xOf(cycle.throughDay, slot),
+			y,
+			color,
+			cycle.openEnded,
+		);
+	}
+}
+
+function lawLine(
+	svg: SVGSVGElement,
+	name: string,
+	x1: number,
+	y1: number,
+	x2: number,
+	y2: number,
+	color: string,
+	openEnded: boolean,
+): void {
+	const line = svgEl("line");
+	line.setAttribute("data-littles", name);
+	line.setAttribute("x1", num(x1));
+	line.setAttribute("y1", num(y1));
+	line.setAttribute("x2", num(x2));
+	line.setAttribute("y2", num(y2));
+	line.setAttribute("stroke", color);
+	line.setAttribute("stroke-width", "1");
+	line.setAttribute("vector-effect", "non-scaling-stroke");
+	line.setAttribute("pointer-events", "none");
+	if (openEnded) {
+		line.setAttribute("data-open", "true");
+		line.setAttribute("stroke-dasharray", "4 3");
+	}
+	svg.append(line);
 }
