@@ -84,7 +84,7 @@ Set the variable on `.cfd`. A variable on `:root` or `body` will not replace the
 | `--color-foreground` | `--color-foreground` | `#1c1917` | Text |
 | `--color-muted` | `--color-muted` | `#78716c` | Labels, playback status, and copyright |
 | `--color-border` | `--color-border` | `#e7e5e4` | Panel, header, footer, and control borders |
-| `--color-primary` | `--color-primary` | `#292524` | Play button and the playhead line |
+| `--color-primary` | `--color-primary` | `#292524` | Play button |
 | `--color-on-primary` | `--color-primary-foreground` | `#ffffff` | Play button label |
 | `--color-highlight` | `--color-highlight` | `#f5f5f4` | Current table row |
 | `--color-chart-1` | `--color-chart-1` | `#8fbfb3` | First state. In the samples, Backlog: band, note, and lane |

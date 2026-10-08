@@ -55,7 +55,6 @@ export function renderChart(
 	const max = chartMax(table, hideDone);
 	const length = Math.max(table.rows.length, 1);
 	const slot = (RIGHT - LEFT) / length;
-	const primary = token(colorRoot, "--color-primary");
 
 	for (const band of bandsFor(table, playhead, hideDone)) {
 		const stateName = table.states[band.state] ?? "State";
@@ -91,20 +90,6 @@ export function renderChart(
 			});
 			svg.append(rect);
 		}
-	}
-
-	if (playhead >= 1) {
-		const x = LEFT + (playhead - 0.5) * slot;
-		const line = svgEl("line");
-		line.setAttribute("x1", num(x));
-		line.setAttribute("x2", num(x));
-		line.setAttribute("y1", num(TOP));
-		line.setAttribute("y2", num(BOTTOM));
-		line.setAttribute("stroke", primary);
-		line.setAttribute("stroke-width", "1");
-		line.setAttribute("vector-effect", "non-scaling-stroke");
-		line.setAttribute("pointer-events", "none");
-		svg.append(line);
 	}
 
 	host.replaceChildren(svg);
