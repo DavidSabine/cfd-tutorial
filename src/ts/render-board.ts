@@ -15,8 +15,8 @@ function el<T extends keyof HTMLElementTagNameMap>(
 	return node;
 }
 
-function tone(state: number): string {
-	return `tone-${(state % 4) + 1}`;
+function toneNumber(state: number): number {
+	return (state % 4) + 1;
 }
 
 export function renderBoard(
@@ -37,7 +37,8 @@ export function renderBoard(
 	const cards = cardsAtDay(table, day);
 	const row = el("div", "flex h-full gap-2 p-2");
 	table.states.forEach((state, index) => {
-		const column = el("div", "column flex flex-col grow-1 gap-2 min-w-0");
+		const tone = toneNumber(index);
+		const column = el("div", `column lane-${tone} flex flex-col grow-1 gap-2 min-w-0 p-2`);
 		column.setAttribute("role", "group");
 		column.setAttribute("aria-label", state);
 		if (selection.state === index) {
@@ -50,10 +51,10 @@ export function renderBoard(
 			if (card.state !== index) {
 				continue;
 			}
-			const button = el("button", `card text-left ${tone(index)}`);
+			const button = el("button", `card tone-${tone}`);
 			button.type = "button";
 			button.dataset.card = String(card.id);
-			button.textContent = String(card.id);
+			button.textContent = `Card ${card.id}`;
 			button.setAttribute("aria-label", `Card ${card.id}`);
 			if (selection.cardId === card.id) {
 				button.classList.add("is-selected");

@@ -25,18 +25,23 @@
     one of four embedded CSVs, returns to day 0, clears the glow, and dispatches
     cfd-resize again. It does not reset Hide done. Playback starts at day 0.
     Play advances one day per frame (1× is one second). Step, reset, and a day
-    jump pause playback. The current row uses --color-highlight. Cards are
-    synthetic and FIFO: card 1 is the oldest, and it sits in the rightmost
-    state whose reached total includes it. The board shows columns with no
-    cards at day 0. A card slides when its state changes. The chart is empty
-    at day 0. From day 1 it stacks one rectangle per state per day through the
-    playhead, Done on the axis, in a 0–100 viewBox inset to 8,6–98,92. X slots
-    cover the whole sample. Y uses the tallest visible total in the sample.
-    Band colors are --color-chart-1 through 4, read from the root's computed
-    style. Hide done drops the Done band on the chart only and dispatches
-    cfd-resize. Click a band, a count, or a card to share one glow on
-    {day, state}. Clicking a day jumps the playhead. A day-label click clears
-    the state glow. A day column is the row label. Every other column is a
+    jump pause playback. The current row uses --color-highlight as a fill.
+    A selected count or card uses a 1px ink line with a short soft halo.
+    Cards are synthetic and FIFO: card 1 is the oldest, and it sits in the
+    rightmost state whose reached total includes it. Each note is 5.5rem wide,
+    filled with that state's chart color, and labeled "Card N". Columns carry
+    a 16% wash of the same color, 28% when selected. The board shows columns
+    with no cards at day 0. A card slides when its state changes. The chart is
+    empty at day 0. From day 1 it stacks one rectangle per state per day through
+    the playhead, Done on the axis, in a 0–100 viewBox inset to 8,6–98,92. X
+    slots cover the whole sample. Y uses the tallest visible total in the
+    sample. Band colors are the lighter --color-chart-1 through 4, read from
+    the root's computed style. The action color is ink, separate from the
+    bands. Hide done drops the Done band on the chart only and dispatches
+    cfd-resize. Click a band, a count, or a card to share one selection on
+    {day, state}. The chart marks only that day. Clicking a day jumps the
+    playhead. A day-label click clears the state selection. A day column is
+    the row label. Every other column is a
     state, left to right, and the last column is Done. Border thickness is
     the --border-width token. Flex grow is 2 and 1.
 -->

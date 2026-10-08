@@ -160,7 +160,7 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 		paint();
 	}
 	function paint(): void {
-		renderChart(chart, root, tableData, playback.day, hideDone, selection.state, (pick) => {
+		renderChart(chart, root, tableData, playback.day, hideDone, selection, (pick) => {
 			choose({ day: pick.day, state: pick.state, cardId: null }, true);
 		});
 		renderTable(table, tableData, playback.day, selection, (pick) => {

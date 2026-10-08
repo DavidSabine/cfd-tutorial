@@ -4,14 +4,14 @@ export const ROOT_CSS = `
 	--color-foreground: #1c1917;
 	--color-muted: #78716c;
 	--color-border: #e7e5e4;
-	--color-primary: #0f766e;
+	--color-primary: #292524;
 	--color-on-primary: #ffffff;
-	--color-highlight: #ccfbf1;
+	--color-highlight: #f5f5f4;
 	--border-width: 1px;
-	--color-chart-1: #0f766e;
-	--color-chart-2: #0369a1;
-	--color-chart-3: #b45309;
-	--color-chart-4: #64748b;
+	--color-chart-1: #8fbfb3;
+	--color-chart-2: #7ea0c4;
+	--color-chart-3: #d4a574;
+	--color-chart-4: #a89bb5;
 	--spacing-1: 0.25rem;
 	--spacing-2: 0.5rem;
 	--spacing-3: 0.75rem;
@@ -28,7 +28,7 @@ export const ROOT_CSS = `
 	--size-chart: 16rem;
 	--size-board: 12rem;
 	--duration-move: 200ms;
-	--shadow-glow: 0 0 0 2px var(--color-primary);
+	--shadow-glow: 0 0 0 1px rgb(28 25 23 / 0.35), 0 0 0 4px rgb(28 25 23 / 0.08);
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: column;
@@ -101,7 +101,6 @@ export const ROOT_CSS = `
 }
 .cfd .row-current .cell {
 	background: var(--color-highlight);
-	box-shadow: var(--shadow-glow);
 }
 .cfd .btn {
 	margin: 0;
@@ -125,22 +124,48 @@ export const ROOT_CSS = `
 	background: var(--color-surface);
 	color: var(--color-muted);
 }
+.cfd .column { border-radius: var(--radius-md); }
 .cfd .card {
+	align-self: center;
+	width: 5.5rem;
+	max-width: 100%;
 	margin: 0;
 	padding: var(--spacing-2);
 	border-style: solid;
 	border-width: var(--border-width);
 	border-radius: var(--radius-md);
-	background: var(--color-surface);
 	color: var(--color-foreground);
-	font-family: var(--font-mono);
+	font-family: inherit;
 	font-size: var(--text-sm);
+	text-align: center;
+	white-space: nowrap;
 }
-.cfd .tone-1 { border-color: var(--color-chart-1); }
-.cfd .tone-2 { border-color: var(--color-chart-2); }
-.cfd .tone-3 { border-color: var(--color-chart-3); }
-.cfd .tone-4 { border-color: var(--color-chart-4); }
+.cfd .tone-1 {
+	background: var(--color-chart-1);
+	border-color: color-mix(in srgb, var(--color-chart-1) 72%, var(--color-foreground));
+}
+.cfd .tone-2 {
+	background: var(--color-chart-2);
+	border-color: color-mix(in srgb, var(--color-chart-2) 72%, var(--color-foreground));
+}
+.cfd .tone-3 {
+	background: var(--color-chart-3);
+	border-color: color-mix(in srgb, var(--color-chart-3) 72%, var(--color-foreground));
+}
+.cfd .tone-4 {
+	background: var(--color-chart-4);
+	border-color: color-mix(in srgb, var(--color-chart-4) 72%, var(--color-foreground));
+}
+.cfd .lane-1 { background: color-mix(in srgb, var(--color-chart-1) 16%, var(--color-surface)); }
+.cfd .lane-2 { background: color-mix(in srgb, var(--color-chart-2) 16%, var(--color-surface)); }
+.cfd .lane-3 { background: color-mix(in srgb, var(--color-chart-3) 16%, var(--color-surface)); }
+.cfd .lane-4 { background: color-mix(in srgb, var(--color-chart-4) 16%, var(--color-surface)); }
+.cfd .lane-1.is-selected { background: color-mix(in srgb, var(--color-chart-1) 28%, var(--color-surface)); }
+.cfd .lane-2.is-selected { background: color-mix(in srgb, var(--color-chart-2) 28%, var(--color-surface)); }
+.cfd .lane-3.is-selected { background: color-mix(in srgb, var(--color-chart-3) 28%, var(--color-surface)); }
+.cfd .lane-4.is-selected { background: color-mix(in srgb, var(--color-chart-4) 28%, var(--color-surface)); }
 .cfd .is-selected { box-shadow: var(--shadow-glow); }
+.cfd .column.is-selected { box-shadow: none; }
 .cfd .cell-selected { box-shadow: var(--shadow-glow); }
 .cfd .hit { cursor: pointer; }
 .cfd .plot {

@@ -39,7 +39,7 @@ export function renderChart(
 	table: FlowTable,
 	playhead: number,
 	hideDone: boolean,
-	selectedState: number | null,
+	selection: { day: number | null; state: number | null },
 	onSelect: (pick: ChartPick) => void,
 ): void {
 	const svg = svgEl("svg");
@@ -56,6 +56,7 @@ export function renderChart(
 	const length = Math.max(table.rows.length, 1);
 	const slot = (RIGHT - LEFT) / length;
 	const primary = token(colorRoot, "--color-primary");
+	let marked: SVGRectElement | undefined;
 
 	for (const band of bandsFor(table, playhead, hideDone)) {
 		const stateName = table.states[band.state] ?? "State";
@@ -78,9 +79,11 @@ export function renderChart(
 			rect.setAttribute("role", "button");
 			rect.setAttribute("tabindex", "0");
 			rect.setAttribute("aria-label", `${stateName} day ${slice.day}`);
-			if (selectedState === band.state) {
+			if (selection.state === band.state && selection.day === slice.day) {
 				rect.setAttribute("stroke", primary);
-				rect.setAttribute("stroke-width", "0.6");
+				rect.setAttribute("stroke-width", "1.5");
+				rect.setAttribute("vector-effect", "non-scaling-stroke");
+				marked = rect;
 			}
 			const pick = (): void => {
 				onSelect({ day: slice.day, state: band.state });
@@ -95,6 +98,9 @@ export function renderChart(
 			svg.append(rect);
 		}
 	}
+	if (marked !== undefined) {
+		svg.append(marked);
+	}
 
 	if (playhead >= 1) {
 		const x = LEFT + (playhead - 0.5) * slot;
@@ -104,7 +110,8 @@ export function renderChart(
 		line.setAttribute("y1", num(TOP));
 		line.setAttribute("y2", num(BOTTOM));
 		line.setAttribute("stroke", primary);
-		line.setAttribute("stroke-width", "0.4");
+		line.setAttribute("stroke-width", "1");
+		line.setAttribute("vector-effect", "non-scaling-stroke");
 		line.setAttribute("pointer-events", "none");
 		svg.append(line);
 	}
