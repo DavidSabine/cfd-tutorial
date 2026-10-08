@@ -42,16 +42,7 @@
     sample. Band colors are the lighter --color-chart-1 through 4, read from
     the root's computed style. The action color is ink, separate from the
     bands. Hide done drops the Done band on the chart only and dispatches
-    cfd-resize. Little's law is off until its checkbox is on. Arrival is the
-    sum of every state. Departure is the Done count. The dashed vertical
-    segment at the end of the window is current WIP (arrival − departure).
-    Cycle time is drawn to the right of that segment, at the arrival level,
-    for the computed number of days. The solid hypotenuse back to the Done
-    level is throughput. The readout is mean WIP, items finished in the
-    window divided by its days, and mean WIP divided by that throughput. With
-    no drag, the window is day 1 through the playhead. Dragging the chart sets
-    the window and dispatches cfd-resize on release. Reset and a new sample
-    clear the drag. Click a band, a count, or a card to share one selection on
+    cfd-resize. Click a band, a count, or a card to share one selection on
     {day, state}. The chart deepens that day's fill. The slice keeps
     tabindex for the keyboard, and its focus outline is cleared.
     A click in the table or the chart leaves the playhead where it is.

@@ -62,7 +62,7 @@ Set these fields on `window.CFD_CONFIG` before the bundle loads. The bundle read
 
 The tool sends a `cfd-resize` event from your container. It bubbles, so the listener in the example above receives it. `detail.height` is how many pixels tall the tool's content is.
 
-The event fires when the tool first measures itself, when a sample loads, when Hide done or Little's law is toggled, and when a drag on the chart ends. Use the height to grow your container so the chart and board are not cut off.
+The event fires when the tool first measures itself, when a sample loads, and when Hide done is toggled. Use the height to grow your container so the chart and board are not cut off.
 
 A container narrower than 640px or shorter than 480px still draws. The tool logs one warning each time it mounts, for example: `CFD: container is 400×300, which is below 640×480. The tool may clip.`
 
@@ -81,8 +81,8 @@ Set the variable on `.cfd`. A variable on `:root` or `body` will not replace the
 | CSS variable | Tailwind name | Default | What it styles |
 | --- | --- | --- | --- |
 | `--color-surface` | `--color-surface` | `#ffffff` | Tool background, controls, and the table header |
-| `--color-foreground` | `--color-foreground` | `#1c1917` | Text, and the Little's law lines |
-| `--color-muted` | `--color-muted` | `#78716c` | Labels, playback status, readout, and copyright |
+| `--color-foreground` | `--color-foreground` | `#1c1917` | Text |
+| `--color-muted` | `--color-muted` | `#78716c` | Labels, playback status, and copyright |
 | `--color-border` | `--color-border` | `#e7e5e4` | Panel, header, footer, and control borders |
 | `--color-primary` | `--color-primary` | `#292524` | Play button and the playhead line |
 | `--color-on-primary` | `--color-primary-foreground` | `#ffffff` | Play button label |
@@ -99,7 +99,7 @@ Set the variable on `.cfd`. A variable on `:root` or `body` will not replace the
 | `--spacing-5` | `--spacing-5` | `1.25rem` | Part of the spacing scale. The built-in layout does not use it |
 | `--spacing-6` | `--spacing-6` | `1.5rem` | Part of the spacing scale. The built-in layout does not use it |
 | `--radius-md` | `--radius-md` | `0.375rem` | Panels, buttons, columns, and notes |
-| `--text-xs` | `--text-xs` | `0.75rem` | Labels, status, table header, and readout |
+| `--text-xs` | `--text-xs` | `0.75rem` | Labels, status, and table header |
 | `--text-sm` | `--text-sm` | `0.875rem` | Body text and controls |
 | `--text-base` | `--text-base` | `1rem` | Part of the type scale. The built-in layout does not use it |
 | `--text-lg` | `--text-lg` | `1.125rem` | Title |
