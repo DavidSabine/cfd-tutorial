@@ -56,7 +56,6 @@ export function renderChart(
 	const length = Math.max(table.rows.length, 1);
 	const slot = (RIGHT - LEFT) / length;
 	const primary = token(colorRoot, "--color-primary");
-	let marked: SVGRectElement | undefined;
 
 	for (const band of bandsFor(table, playhead, hideDone)) {
 		const stateName = table.states[band.state] ?? "State";
@@ -73,18 +72,13 @@ export function renderChart(
 			rect.setAttribute("y", num(y));
 			rect.setAttribute("width", num(slot));
 			rect.setAttribute("height", num(height));
-			rect.setAttribute("fill", fill);
+			const selected = selection.state === band.state && selection.day === slice.day;
+			rect.setAttribute("fill", selected ? `color-mix(in srgb, ${fill} 68%, black)` : fill);
 			rect.dataset.day = String(slice.day);
 			rect.dataset.state = String(band.state);
 			rect.setAttribute("role", "button");
 			rect.setAttribute("tabindex", "0");
 			rect.setAttribute("aria-label", `${stateName} day ${slice.day}`);
-			if (selection.state === band.state && selection.day === slice.day) {
-				rect.setAttribute("stroke", primary);
-				rect.setAttribute("stroke-width", "1.5");
-				rect.setAttribute("vector-effect", "non-scaling-stroke");
-				marked = rect;
-			}
 			const pick = (): void => {
 				onSelect({ day: slice.day, state: band.state });
 			};
@@ -97,9 +91,6 @@ export function renderChart(
 			});
 			svg.append(rect);
 		}
-	}
-	if (marked !== undefined) {
-		svg.append(marked);
 	}
 
 	if (playhead >= 1) {

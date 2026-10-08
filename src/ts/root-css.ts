@@ -27,7 +27,7 @@ export const ROOT_CSS = `
 	--font-mono: ui-monospace, monospace;
 	--size-chart: 16rem;
 	--size-board: 12rem;
-	--duration-move: 200ms;
+	--duration-move: 400ms;
 	--shadow-glow: 0 0 0 1px rgb(28 25 23 / 0.35), 0 0 0 4px rgb(28 25 23 / 0.08);
 	box-sizing: border-box;
 	display: flex;
@@ -125,6 +125,8 @@ export const ROOT_CSS = `
 	color: var(--color-muted);
 }
 .cfd .column { border-radius: var(--radius-md); }
+.cfd .column-done { overflow: hidden; min-height: 0; }
+.cfd .overflow-hidden { overflow: hidden; }
 .cfd .card {
 	align-self: center;
 	width: 5.5rem;
@@ -176,6 +178,8 @@ export const ROOT_CSS = `
 	min-height: 0;
 }
 .cfd .band { cursor: pointer; }
+.cfd .band:focus,
+.cfd .band:focus-visible { outline: none; }
 .cfd .card-move {
 	transition-property: transform;
 	transition-duration: var(--duration-move);

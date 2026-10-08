@@ -3,7 +3,6 @@ import {
 	canStepForward,
 	createPlayback,
 	frameMs,
-	goToDay,
 	parseSpeed,
 	replaceLength,
 	replaceSpeed,
@@ -151,20 +150,16 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 			timer = undefined;
 		}
 	}
-	function choose(next: Glow, jump: boolean): void {
+	function choose(next: Glow): void {
 		selection = next;
-		if (jump && next.day !== null && next.day !== playback.day) {
-			apply(goToDay(playback, next.day));
-			return;
-		}
 		paint();
 	}
 	function paint(): void {
 		renderChart(chart, root, tableData, playback.day, hideDone, selection, (pick) => {
-			choose({ day: pick.day, state: pick.state, cardId: null }, true);
+			choose({ day: pick.day, state: pick.state, cardId: null });
 		});
 		renderTable(table, tableData, playback.day, selection, (pick) => {
-			choose({ day: pick.day, state: pick.state, cardId: null }, true);
+			choose({ day: pick.day, state: pick.state, cardId: null });
 		});
 		renderBoard(
 			board,
@@ -172,14 +167,11 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 			playback.day,
 			{ state: selection.state, cardId: selection.cardId },
 			(next) => {
-				choose(
-					{
-						day: playback.day > 0 ? playback.day : null,
-						state: next.state,
-						cardId: next.cardId,
-					},
-					false,
-				);
+				choose({
+					day: playback.day > 0 ? playback.day : null,
+					state: next.state,
+					cardId: next.cardId,
+				});
 			},
 		);
 		back.disabled = !canStepBack(playback);

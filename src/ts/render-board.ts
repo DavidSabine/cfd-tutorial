@@ -38,7 +38,11 @@ export function renderBoard(
 	const row = el("div", "flex h-full gap-2 p-2");
 	table.states.forEach((state, index) => {
 		const tone = toneNumber(index);
-		const column = el("div", `column lane-${tone} flex flex-col grow-1 gap-2 min-w-0 p-2`);
+		const done = index === table.states.length - 1;
+		const column = el(
+			"div",
+			`column lane-${tone} flex flex-col grow-1 gap-2 min-w-0 p-2${done ? " column-done" : ""}`,
+		);
 		column.setAttribute("role", "group");
 		column.setAttribute("aria-label", state);
 		if (selection.state === index) {
@@ -51,7 +55,7 @@ export function renderBoard(
 			if (card.state !== index) {
 				continue;
 			}
-			const button = el("button", `card tone-${tone}`);
+			const button = el("button", done ? `card tone-${tone} overflow-hidden` : `card tone-${tone}`);
 			button.type = "button";
 			button.dataset.card = String(card.id);
 			button.textContent = `Card ${card.id}`;
