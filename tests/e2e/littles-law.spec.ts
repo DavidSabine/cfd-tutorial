@@ -22,6 +22,10 @@ async function columnPoint(page: Page, day: number): Promise<{ x: number; y: num
 	return { x: box.x + (viewX / 100) * box.width, y: box.y + box.height * 0.5 };
 }
 
+async function back(page: Page): Promise<void> {
+	await page.getByRole("button", { name: "Back", exact: true }).click();
+}
+
 async function mouseDrag(page: Page, fromDay: number, toDay: number): Promise<void> {
 	const from = await columnPoint(page, fromDay);
 	const to = await columnPoint(page, toDay);
@@ -136,4 +140,51 @@ test("a touch drag commits the same lines", async ({ page }) => {
 	await expect(chart.locator('[data-littles="arrivalRate"]')).toHaveCount(1);
 	await expect(chart.locator('[data-littles="wip"]')).toHaveAttribute("data-day", "4");
 	await expect(chart.locator("[data-preview]")).toHaveCount(0);
+});
+
+test("playback and hide done keep the dragged days", async ({ page }) => {
+	await page.goto("/");
+	await stepTo(page, 8);
+	const chart = page.getByRole("region", { name: "Cumulative flow diagram" });
+	await mouseDrag(page, 4, 6);
+	const cycle = chart.locator('[data-littles="approximateCycleTime"]');
+	await expect(cycle).not.toHaveAttribute("data-open", "true");
+	await expect(cycle).toHaveAttribute("data-through-day", "8");
+
+	await back(page);
+	await back(page);
+	await expect(page.getByText("Day 6 of 16", { exact: true })).toBeVisible();
+	await expect(cycle).toHaveAttribute("data-open", "true");
+	await expect(cycle).toHaveAttribute("data-through-day", "6");
+	await page.getByRole("button", { name: "Forward" }).click();
+	await page.getByRole("button", { name: "Forward" }).click();
+	await expect(cycle).not.toHaveAttribute("data-open", "true");
+	await expect(cycle).toHaveAttribute("data-through-day", "8");
+
+	await back(page);
+	await back(page);
+	await back(page);
+	await expect(page.getByText("Day 5 of 16", { exact: true })).toBeVisible();
+	await expect(chart.locator('[data-littles="arrivalRate"]')).toHaveCount(0);
+	await expect(chart.locator('[data-littles="departureRate"]')).toHaveCount(0);
+	await expect(chart.locator('[data-littles="wip"]')).toHaveCount(1);
+	await page.getByRole("button", { name: "Forward" }).click();
+	await expect(chart.locator('[data-littles="arrivalRate"]')).toHaveCount(1);
+	await expect(chart.locator('[data-littles="departureRate"]')).toHaveCount(1);
+
+	await page.getByRole("button", { name: "Reset" }).click();
+	await expect(chart.locator("[data-littles]")).toHaveCount(0);
+	await stepTo(page, 6);
+	await expect(chart.locator('[data-littles="arrivalRate"]')).toHaveCount(1);
+	await expect(chart.locator('[data-littles="departureRate"]')).toHaveCount(1);
+	await expect(chart.locator('[data-littles="wip"]')).toHaveCount(1);
+	await page.getByRole("button", { name: "Forward" }).click();
+	await page.getByRole("button", { name: "Forward" }).click();
+	await expect(cycle).toHaveAttribute("data-through-day", "8");
+	await page.getByRole("checkbox", { name: "Hide done" }).check();
+	await expect(chart.locator("[data-littles]")).toHaveCount(0);
+	await page.getByRole("checkbox", { name: "Hide done" }).uncheck();
+	await expect(chart.locator('[data-littles="departureRate"]')).toHaveCount(1);
+	await expect(cycle).not.toHaveAttribute("data-open", "true");
+	await expect(cycle).toHaveAttribute("data-through-day", "8");
 });

@@ -223,6 +223,7 @@ function drawLittlesLaw(
 			cycle.openEnded,
 			preview,
 			null,
+			cycle.throughDay,
 		);
 	}
 }
@@ -238,11 +239,15 @@ function lawLine(
 	openEnded: boolean,
 	preview: boolean,
 	day: number | null,
+	throughDay: number | null = null,
 ): void {
 	const line = svgEl("line");
 	line.setAttribute("data-littles", name);
 	if (day !== null) {
 		line.setAttribute("data-day", String(day));
+	}
+	if (throughDay !== null) {
+		line.setAttribute("data-through-day", String(throughDay));
 	}
 	line.setAttribute("x1", num(x1));
 	line.setAttribute("y1", num(y1));

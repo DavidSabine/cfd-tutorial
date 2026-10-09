@@ -33,7 +33,7 @@ Heights come from the top edge of the bands you can see, in the same viewBox as 
 3. `wip` is a vertical line on `startDay` only, from the top of the topmost band down to the top of the done band. If that day has no done band, it ends on the baseline. Its length is the item count.
 4. `approximateCycleTime` starts at the top of `startDay`'s topmost band and runs horizontally to the right. It stops on the first later visible day whose Done top has reached that height. The day count is `meetingDay - startDay`. If no visible day qualifies, it stops on the last visible day, `days` is null, and the line is open-ended.
 
-Hide done removes the done band. The departure line is then absent, WIP drops to the baseline, and the cycle-time line is open-ended, because those rules follow the visible edges. The selection itself stays.
+Hide done hides every Little's Law line and keeps the dragged days. Turning it off draws that same drag again. The lines are not redrawn against the chart with Done removed.
 
 Balanced flow, drag from day 4 to day 6, playhead at least 8: arrival tops are 5 and 8, so `arrivalRate` is 1.5 per day. Done tops are 1 and 3, so `departureRate` is 1 per day. WIP on day 4 is 4. Done first reaches 5 on day 8, so `approximateCycleTime` is 4 days.
 
@@ -45,7 +45,7 @@ Balanced flow, drag from day 4 to day 6, playhead at least 8: arrival tops are 5
 - An open-ended cycle-time line stays dashed after commit. A preview is lighter than that, so the two dashes are not the same style.
 - Every line has `pointer-events: none` and no `<title>`, so it cannot take clicks or hover from the bands. The only tooltip today is the chart's own title plus the band button names.
 - The click that ends a drag does not also glow a band. A later plain click on the chart clears `littlesLawSelection` and still glows the band.
-- Escape clears the selection. Play, Back, Forward, Reset, Hide done, the board, and the table do not. Changing the sample does.
+- Escape clears the selection. Play, Back, Forward, Reset, the board, and the table do not. Hide done hides the lines and keeps the selection. Changing the sample clears it.
 - A drag does not dispatch `cfd-resize`. The lines do not change the tool's height.
 
 ## Playback after the lines are showing
@@ -101,7 +101,7 @@ The shell keeps the stored days across Play, Back, Forward, and Reset. Drawing u
 - Back to day 6 turns it dashed; Forward to day 8 turns it solid again
 - Back to day 5 hides the arrival and departure lines and keeps WIP; Forward to day 6 restores both chords
 - Reset hides every line; Forward back through day 6 restores them without a new drag
-- Hide done drops the departure line and marks the cycle-time line open
+- Hide done hides every line; unchecking it draws the same drag again
 
 Update the decision comment in `index.html` so it describes these four lines. Leave `prompts-decision-record/` as the record of the old overlay. The README embed contract does not change.
 

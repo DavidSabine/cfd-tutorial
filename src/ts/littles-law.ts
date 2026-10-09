@@ -84,6 +84,8 @@ function rate(startDay: number, endDay: number, startHeight: number, endHeight: 
 /**
  * Item heights for the four lines. Rate lines are omitted unless both selected
  * days are visible, so a shorter playhead does not change their slope.
+ * Hide done returns no lines. The caller keeps the selection and draws it
+ * again when Done is shown.
  */
 export function littlesLawLines(
 	table: FlowTable,
@@ -101,6 +103,9 @@ export function littlesLawLines(
 		wip: null,
 		approximateCycleTime: null,
 	};
+	if (hideDone) {
+		return none;
+	}
 	if (startDay < 1 || endDay <= startDay || lastVisible < startDay) {
 		return none;
 	}

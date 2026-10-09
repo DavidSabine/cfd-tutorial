@@ -25,8 +25,9 @@
     cfd-tutorial-1.0.0.js. The preview page uses that same name.
   - The shell is a header (title and brand HTML), a flex row at 2:1 (chart
     over board, the sample spreadsheet), and a footer. The sample select loads
-    one of four embedded CSVs, returns to day 0, clears the glow, and dispatches
-    cfd-resize again. It does not reset Hide done. Playback starts at day 0.
+    one of four embedded CSVs, returns to day 0, clears the glow and a Little's
+    Law drag, and dispatches cfd-resize again. It does not reset Hide done.
+    Playback starts at day 0.
     Play advances one day per frame (1× is one second). Step and reset pause
     playback. The current row uses --color-highlight as a fill.
     A selected count or card uses a 1px ink line with a short soft halo.
@@ -41,7 +42,21 @@
     slots cover the whole sample. Y uses the tallest visible total in the
     sample. Band colors are the lighter --color-chart-1 through 4, read from
     the root's computed style. Hide done drops the Done band on the chart only
-    and dispatches cfd-resize. Click a band, a count, or a card to share one selection on
+    and dispatches cfd-resize. Once more than two days are visible, a drag
+    from one day to another draws Little's Law. The earlier day is startDay.
+    arrivalRate joins the top of the stack on startDay to the top on endDay.
+    departureRate joins the tops of the Done bands, and is drawn only when
+    both days have one. wip is vertical on startDay, from the top of the stack
+    down to Done, or to the baseline when that day has no Done band.
+    approximateCycleTime runs right from startDay's top until a later visible
+    day whose Done top reaches that height. If none does, the line is dashed
+    and stops on the playhead. Play, Back, Forward, and Reset keep the dragged
+    days and redraw the lines for the days on screen. The rate chords are
+    hidden while endDay is not visible, and they return at the same slope
+    when it is. Hide done hides the Little's Law lines and keeps the dragged
+    days, so turning it off draws them again. A plain chart click or Escape
+    clears the drag. Click a band,
+    a count, or a card to share one selection on
     {day, state}. The chart deepens that day's fill. The slice keeps
     tabindex for the keyboard, and its focus outline is cleared.
     A click in the table or the chart leaves the playhead where it is.

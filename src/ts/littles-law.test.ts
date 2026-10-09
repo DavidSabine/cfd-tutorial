@@ -105,22 +105,11 @@ test('draws nothing when the start day is not visible', () => {
 	})
 })
 
-test('follows the visible edges when Done is hidden', () => {
-	const lines = littlesLawLines(table, 8, true, selection(4, 6))
-	expect(lines.arrivalRate).toEqual({
-		startDay: 4,
-		endDay: 6,
-		startHeight: 4,
-		endHeight: 5,
-		perDay: 0.5,
-	})
-	expect(lines.departureRate).toBeNull()
-	expect(lines.wip).toEqual({ day: 4, top: 4, bottom: 0, items: 4 })
-	expect(lines.approximateCycleTime).toEqual({
-		startDay: 4,
-		height: 4,
-		throughDay: 8,
-		days: null,
-		openEnded: true,
+test('hides every line while Done is hidden', () => {
+	expect(littlesLawLines(table, 8, true, selection(4, 6))).toEqual({
+		arrivalRate: null,
+		departureRate: null,
+		wip: null,
+		approximateCycleTime: null,
 	})
 })
