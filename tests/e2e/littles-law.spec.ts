@@ -49,6 +49,10 @@ test("commits four lines with WIP on the earlier day", async ({ page }) => {
 		"data-open",
 		"true",
 	);
+	await expect(chart.getByText("Approx. Avg. Arrival Rate")).toBeVisible();
+	await expect(chart.getByText("Approx. Avg. Throughput")).toBeVisible();
+	await expect(chart.getByText("WIP", { exact: true })).toBeVisible();
+	await expect(chart.getByText("Approx. Avg. Cycle Time")).toBeVisible();
 });
 
 test("a leftward drag keeps the earlier day as the WIP day", async ({ page }) => {
@@ -183,6 +187,7 @@ test("playback and hide done keep the dragged days", async ({ page }) => {
 	await expect(cycle).toHaveAttribute("data-through-day", "8");
 	await page.getByRole("checkbox", { name: "Hide done" }).check();
 	await expect(chart.locator("[data-littles]")).toHaveCount(0);
+	await expect(chart.getByText("WIP", { exact: true })).toHaveCount(0);
 	await page.getByRole("checkbox", { name: "Hide done" }).uncheck();
 	await expect(chart.locator('[data-littles="departureRate"]')).toHaveCount(1);
 	await expect(cycle).not.toHaveAttribute("data-open", "true");

@@ -170,6 +170,28 @@ export const ROOT_CSS = `
 .cfd .column.is-selected { box-shadow: none; }
 .cfd .cell-selected { box-shadow: var(--shadow-glow); }
 .cfd .hit { cursor: pointer; }
+.cfd .chart { position: relative; }
+.cfd .law-labels {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	pointer-events: none;
+}
+.cfd .law-label {
+	position: absolute;
+	margin: 0;
+	padding: 0 0.2rem;
+	color: var(--color-foreground);
+	font-size: var(--text-xs);
+	line-height: 1.2;
+	white-space: nowrap;
+	background: color-mix(in srgb, var(--color-surface) 88%, transparent);
+	transform: translate(0.15rem, calc(-100% - 0.1rem));
+	pointer-events: none;
+}
+.cfd .law-label.is-end { transform: translate(calc(-100% - 0.15rem), calc(-100% - 0.1rem)); }
+.cfd .law-label.is-below { transform: translate(0.15rem, 0.1rem); }
+.cfd .law-label.is-end.is-below { transform: translate(calc(-100% - 0.15rem), 0.1rem); }
 .cfd .plot {
 	display: block;
 	flex: 1 1 auto;

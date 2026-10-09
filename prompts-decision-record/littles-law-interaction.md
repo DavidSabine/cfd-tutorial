@@ -105,6 +105,10 @@ The shell keeps the stored days across Play, Back, Forward, and Reset. Drawing u
 
 Update the decision comment in `index.html` so it describes these four lines. Leave `prompts-decision-record/` as the record of the old overlay. The README embed contract does not change.
 
+## Labels
+
+Each visible line has an HTML label over the chart, not SVG text, so the stretched plot does not warp the words. Arrival is "Approx. Avg. Arrival Rate". The departure line is "Approx. Avg. Throughput". WIP is "WIP". Cycle time is "Approx. Avg. Cycle Time". Labels follow the same visibility as the lines and do not receive pointer events.
+
 ## Out of this pass
 
-No readout, no toggle, and no change to the band glow except that a drag does not also count as a band click.
+No numeric readout, no toggle, and no change to the band glow except that a drag does not also count as a band click.

@@ -1,5 +1,6 @@
 import { bandsFor, chartMax } from "./chart";
 import {
+	LITTLES_LAW_LABELS,
 	littlesLawEnabled,
 	littlesLawLines,
 	type LittlesLawLines,
@@ -129,16 +130,17 @@ export function renderChart(
 		}
 	}
 
-	if (littlesLaw.selection !== null) {
-		drawLittlesLaw(
-			svg,
-			littlesLawLines(table, playhead, hideDone, littlesLaw.selection),
-			max,
-			slot,
-			token(colorRoot, "--color-foreground"),
-			littlesLaw.preview,
-		);
-	}
+	const labels =
+		littlesLaw.selection === null
+			? null
+			: drawLittlesLaw(
+					svg,
+					littlesLawLines(table, playhead, hideDone, littlesLaw.selection),
+					max,
+					slot,
+					token(colorRoot, "--color-foreground"),
+					littlesLaw.preview,
+				);
 
 	const visibleDays = Math.min(table.rows.length, Math.max(0, playhead));
 	dragApis.set(host, {
@@ -153,6 +155,9 @@ export function renderChart(
 	});
 	bindDrag(host, littlesLaw.disposeSignal);
 	host.replaceChildren(svg);
+	if (labels !== null && labels.childElementCount > 0) {
+		host.append(labels);
+	}
 }
 
 function drawLittlesLaw(
@@ -162,7 +167,9 @@ function drawLittlesLaw(
 	slot: number,
 	color: string,
 	preview: boolean,
-): void {
+): HTMLDivElement {
+	const labels = document.createElement("div");
+	labels.className = "law-labels";
 	const arrival = lines.arrivalRate;
 	if (arrival !== null) {
 		lawLine(
@@ -176,6 +183,9 @@ function drawLittlesLaw(
 			false,
 			preview,
 			null,
+		);
+		labels.append(
+			lawLabel("arrivalRate", xOf(arrival.endDay, slot), yOf(arrival.endHeight, max)),
 		);
 	}
 	const departure = lines.departureRate;
@@ -191,6 +201,13 @@ function drawLittlesLaw(
 			false,
 			preview,
 			null,
+		);
+		labels.append(
+			lawLabel(
+				"departureRate",
+				xOf(departure.endDay, slot),
+				yOf(departure.endHeight, max),
+			),
 		);
 	}
 	const wip = lines.wip;
@@ -208,6 +225,8 @@ function drawLittlesLaw(
 			preview,
 			wip.day,
 		);
+		const mid = (yOf(wip.top, max) + yOf(wip.bottom, max)) / 2;
+		labels.append(lawLabel("wip", x, mid));
 	}
 	const cycle = lines.approximateCycleTime;
 	if (cycle !== null) {
@@ -225,7 +244,21 @@ function drawLittlesLaw(
 			null,
 			cycle.throughDay,
 		);
+		labels.append(lawLabel("approximateCycleTime", xOf(cycle.throughDay, slot), y));
 	}
+	return labels;
+}
+
+function lawLabel(name: keyof typeof LITTLES_LAW_LABELS, x: number, y: number): HTMLParagraphElement {
+	const node = document.createElement("p");
+	const end = x > 72;
+	const below = y < 18;
+	node.className = `law-label${end ? " is-end" : ""}${below ? " is-below" : ""}`;
+	node.dataset.littlesLabel = name;
+	node.textContent = LITTLES_LAW_LABELS[name];
+	node.style.left = `${x}%`;
+	node.style.top = `${y}%`;
+	return node;
 }
 
 function lawLine(

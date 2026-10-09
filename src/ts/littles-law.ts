@@ -35,6 +35,14 @@ export type LittlesLawLines = {
 	approximateCycleTime: CycleTimeLine | null;
 };
 
+/** Visible names. Throughput is the departure line. */
+export const LITTLES_LAW_LABELS = {
+	arrivalRate: "Approx. Avg. Arrival Rate",
+	departureRate: "Approx. Avg. Throughput",
+	wip: "WIP",
+	approximateCycleTime: "Approx. Avg. Cycle Time",
+} as const;
+
 /** A drag needs more than two visible days. Visible days are day 1 through the playhead. */
 export function littlesLawEnabled(visibleDays: number): boolean {
 	return visibleDays > 2;

@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest'
 import {
+	LITTLES_LAW_LABELS,
 	type LittlesLawSelection,
 	littlesLawEnabled,
 	littlesLawLines,
@@ -14,6 +15,15 @@ function selection(startDay: number, endDay: number): LittlesLawSelection {
 		endDay: Math.max(startDay, endDay),
 	}
 }
+
+test('names arrival, throughput, WIP, and cycle time', () => {
+	expect(LITTLES_LAW_LABELS).toEqual({
+		arrivalRate: 'Approx. Avg. Arrival Rate',
+		departureRate: 'Approx. Avg. Throughput',
+		wip: 'WIP',
+		approximateCycleTime: 'Approx. Avg. Cycle Time',
+	})
+})
 
 test('enables the drag only after two visible days', () => {
 	expect(littlesLawEnabled(0)).toBe(false)
