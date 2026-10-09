@@ -1,10 +1,12 @@
 # cfd-tutorial
 
-Copyright © 2026 David Sabine. All rights reserved. No license is granted to use, copy, modify, or distribute this package except with prior written permission. See [LICENSE](LICENSE).
+Yes. You can try the chart [on this page](https://davesabine.com/cfd-tutorial/demo). The npm package, or the JavaScript bundle directly, can be used in your own web page.
+
+I do not provide tech support.
+
+Copyright © 2026 David Sabine. Released under the [MIT License](LICENSE).
 
 This package is a lightweight JavaScript bundle that you can import like any npm package, or you can download the JS file and include it in your project's file system. Instructions are below to set `window.CFD_CONFIG` with your own branding.
-
-You can try the tool here: https://davesabine.com/cfd-tutorial/demo
 
 ## Add it to your page
 

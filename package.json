@@ -2,7 +2,7 @@
 	"name": "@davidsabine/cfd-tutorial",
 	"version": "1.0.2",
 	"description": "Browser embed of the cumulative flow diagram teaching tool.",
-	"license": "UNLICENSED",
+	"license": "MIT",
 	"author": "David Sabine",
 	"homepage": "https://davesabine.com/cfd-tutorial/demo",
 	"repository": {
