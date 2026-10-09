@@ -1,17 +1,20 @@
 {
 	"name": "@davidsabine/cfd-tutorial",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "Browser embed of the cumulative flow diagram teaching tool.",
 	"license": "UNLICENSED",
 	"author": "David Sabine",
 	"homepage": "https://davesabine.com/cfd-tutorial/demo",
-	"repository": { "type": "git", "url": "https://github.com/DavidSabine/cfd-tutorial" },
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/DavidSabine/cfd-tutorial"
+	},
 	"type": "module",
 	"sideEffects": true,
-	"main": "./dist/cfd-tutorial-1.0.1.js",
-	"browser": "./dist/cfd-tutorial-1.0.1.js",
+	"main": "./dist/cfd-tutorial-1.0.2.js",
+	"browser": "./dist/cfd-tutorial-1.0.2.js",
 	"exports": {
-		".": "./dist/cfd-tutorial-1.0.1.js"
+		".": "./dist/cfd-tutorial-1.0.2.js"
 	},
 	"files": [
 		"dist/cfd-tutorial-*.js"
