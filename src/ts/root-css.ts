@@ -176,6 +176,7 @@ export const ROOT_CSS = `
 	width: 100%;
 	height: 100%;
 	min-height: 0;
+	touch-action: none;
 }
 .cfd .band { cursor: pointer; }
 .cfd .band:focus,

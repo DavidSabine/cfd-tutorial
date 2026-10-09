@@ -1,5 +1,10 @@
 import { bandsFor, chartMax } from "./chart";
-import { littlesLawLines, type LittlesLawLines, type LittlesLawSelection } from "./littles-law";
+import {
+	littlesLawEnabled,
+	littlesLawLines,
+	type LittlesLawLines,
+	type LittlesLawSelection,
+} from "./littles-law";
 import type { FlowTable } from "./parse-csv";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -13,6 +18,32 @@ export type ChartPick = {
 	day: number;
 	state: number;
 };
+
+export type LittlesLawGesture = {
+	selection: LittlesLawSelection | null;
+	preview: boolean;
+	disposeSignal: AbortSignal;
+	onPreview: (selection: LittlesLawSelection) => void;
+	onCommit: (selection: LittlesLawSelection) => void;
+	onCancel: () => void;
+	onClear: () => void;
+};
+
+const DRAG_PX = 4;
+
+type DragApi = {
+	svg: SVGSVGElement;
+	playhead: number;
+	length: number;
+	enabled: boolean;
+	onPreview: (selection: LittlesLawSelection) => void;
+	onCommit: (selection: LittlesLawSelection) => void;
+	onCancel: () => void;
+	onClear: () => void;
+};
+
+const dragApis = new WeakMap<HTMLElement, DragApi>();
+const dragBound = new WeakSet<HTMLElement>();
 
 function svgEl<T extends keyof SVGElementTagNameMap>(tag: T): SVGElementTagNameMap[T] {
 	return document.createElementNS(SVG_NS, tag);
@@ -45,7 +76,7 @@ export function renderChart(
 	playhead: number,
 	hideDone: boolean,
 	selection: { day: number | null; state: number | null },
-	littlesLawSelection: LittlesLawSelection | null,
+	littlesLaw: LittlesLawGesture,
 	onSelect: (pick: ChartPick) => void,
 ): void {
 	const svg = svgEl("svg");
@@ -98,16 +129,29 @@ export function renderChart(
 		}
 	}
 
-	if (littlesLawSelection !== null) {
+	if (littlesLaw.selection !== null) {
 		drawLittlesLaw(
 			svg,
-			littlesLawLines(table, playhead, hideDone, littlesLawSelection),
+			littlesLawLines(table, playhead, hideDone, littlesLaw.selection),
 			max,
 			slot,
 			token(colorRoot, "--color-foreground"),
+			littlesLaw.preview,
 		);
 	}
 
+	const visibleDays = Math.min(table.rows.length, Math.max(0, playhead));
+	dragApis.set(host, {
+		svg,
+		playhead,
+		length,
+		enabled: littlesLawEnabled(visibleDays),
+		onPreview: littlesLaw.onPreview,
+		onCommit: littlesLaw.onCommit,
+		onCancel: littlesLaw.onCancel,
+		onClear: littlesLaw.onClear,
+	});
+	bindDrag(host, littlesLaw.disposeSignal);
 	host.replaceChildren(svg);
 }
 
@@ -117,6 +161,7 @@ function drawLittlesLaw(
 	max: number,
 	slot: number,
 	color: string,
+	preview: boolean,
 ): void {
 	const arrival = lines.arrivalRate;
 	if (arrival !== null) {
@@ -129,6 +174,8 @@ function drawLittlesLaw(
 			yOf(arrival.endHeight, max),
 			color,
 			false,
+			preview,
+			null,
 		);
 	}
 	const departure = lines.departureRate;
@@ -142,12 +189,25 @@ function drawLittlesLaw(
 			yOf(departure.endHeight, max),
 			color,
 			false,
+			preview,
+			null,
 		);
 	}
 	const wip = lines.wip;
 	if (wip !== null) {
 		const x = xOf(wip.day, slot);
-		lawLine(svg, "wip", x, yOf(wip.top, max), x, yOf(wip.bottom, max), color, false);
+		lawLine(
+			svg,
+			"wip",
+			x,
+			yOf(wip.top, max),
+			x,
+			yOf(wip.bottom, max),
+			color,
+			false,
+			preview,
+			wip.day,
+		);
 	}
 	const cycle = lines.approximateCycleTime;
 	if (cycle !== null) {
@@ -161,6 +221,8 @@ function drawLittlesLaw(
 			y,
 			color,
 			cycle.openEnded,
+			preview,
+			null,
 		);
 	}
 }
@@ -174,9 +236,14 @@ function lawLine(
 	y2: number,
 	color: string,
 	openEnded: boolean,
+	preview: boolean,
+	day: number | null,
 ): void {
 	const line = svgEl("line");
 	line.setAttribute("data-littles", name);
+	if (day !== null) {
+		line.setAttribute("data-day", String(day));
+	}
 	line.setAttribute("x1", num(x1));
 	line.setAttribute("y1", num(y1));
 	line.setAttribute("x2", num(x2));
@@ -185,9 +252,187 @@ function lawLine(
 	line.setAttribute("stroke-width", "1");
 	line.setAttribute("vector-effect", "non-scaling-stroke");
 	line.setAttribute("pointer-events", "none");
-	if (openEnded) {
-		line.setAttribute("data-open", "true");
+	if (preview) {
+		line.setAttribute("data-preview", "true");
+		line.setAttribute("stroke-opacity", "0.45");
+		line.setAttribute("stroke-dasharray", "2 3");
+	} else if (openEnded) {
 		line.setAttribute("stroke-dasharray", "4 3");
 	}
+	if (openEnded) {
+		line.setAttribute("data-open", "true");
+	}
 	svg.append(line);
+}
+
+function dayAt(api: DragApi, clientX: number): number {
+	const bounds = api.svg.getBoundingClientRect();
+	const slot = (RIGHT - LEFT) / Math.max(api.length, 1);
+	const last = Math.min(api.length, Math.max(0, api.playhead));
+	if (bounds.width <= 0 || slot <= 0 || last < 1) {
+		return 1;
+	}
+	const viewX = ((clientX - bounds.left) / bounds.width) * 100;
+	const day = Math.floor((viewX - LEFT) / slot) + 1;
+	return Math.min(last, Math.max(1, day));
+}
+
+function bindDrag(host: HTMLElement, disposeSignal: AbortSignal): void {
+	if (dragBound.has(host)) {
+		return;
+	}
+	dragBound.add(host);
+	let originX = 0;
+	let originY = 0;
+	let originDay = 1;
+	let pointerId = -1;
+	let moved = false;
+	let tracking = false;
+	let suppressClick = false;
+
+	function selectionBetween(clientX: number): LittlesLawSelection | null {
+		const api = dragApis.get(host);
+		if (api === undefined) {
+			return null;
+		}
+		const day = dayAt(api, clientX);
+		if (day === originDay) {
+			return null;
+		}
+		return { startDay: Math.min(originDay, day), endDay: Math.max(originDay, day) };
+	}
+
+	function releaseCapture(): void {
+		if (host.hasPointerCapture(pointerId)) {
+			host.releasePointerCapture(pointerId);
+		}
+	}
+
+	function finish(event: PointerEvent): void {
+		if (!tracking || event.pointerId !== pointerId) {
+			return;
+		}
+		tracking = false;
+		releaseCapture();
+		if (!moved) {
+			return;
+		}
+		suppressClick = true;
+		setTimeout(() => {
+			suppressClick = false;
+		}, 0);
+		const api = dragApis.get(host);
+		if (api === undefined) {
+			return;
+		}
+		const next = selectionBetween(event.clientX);
+		if (next === null) {
+			api.onCancel();
+			return;
+		}
+		api.onCommit(next);
+	}
+
+	host.addEventListener("pointerdown", (event) => {
+		if (!event.isPrimary || event.button !== 0) {
+			return;
+		}
+		const api = dragApis.get(host);
+		if (api === undefined || !api.enabled) {
+			return;
+		}
+		tracking = true;
+		moved = false;
+		pointerId = event.pointerId;
+		originX = event.clientX;
+		originY = event.clientY;
+		originDay = dayAt(api, event.clientX);
+	});
+	document.addEventListener(
+		"pointermove",
+		(event) => {
+			if (!tracking || event.pointerId !== pointerId) {
+				return;
+			}
+			if (event.buttons === 0) {
+				finish(event);
+				return;
+			}
+			if (!moved) {
+				const distance = Math.hypot(event.clientX - originX, event.clientY - originY);
+				if (distance < DRAG_PX) {
+					return;
+				}
+				moved = true;
+				// Touch keeps sending events to the pointerdown target. The preview
+				// replaces that SVG, so the chart section has to own the rest of the drag.
+				try {
+					host.setPointerCapture(pointerId);
+				} catch {
+					// A synthetic event has no active pointer to capture.
+				}
+			}
+			const api = dragApis.get(host);
+			if (api === undefined) {
+				return;
+			}
+			const next = selectionBetween(event.clientX);
+			if (next === null) {
+				api.onCancel();
+				return;
+			}
+			api.onPreview(next);
+		},
+		{ signal: disposeSignal },
+	);
+	document.addEventListener("pointerup", finish, { signal: disposeSignal });
+	document.addEventListener(
+		"pointercancel",
+		(event) => {
+			if (!tracking || event.pointerId !== pointerId) {
+				return;
+			}
+			tracking = false;
+			moved = false;
+			releaseCapture();
+			dragApis.get(host)?.onCancel();
+		},
+		{ signal: disposeSignal },
+	);
+	document.addEventListener(
+		"click",
+		(event) => {
+			if (!suppressClick) {
+				return;
+			}
+			suppressClick = false;
+			event.preventDefault();
+			event.stopPropagation();
+		},
+		{ capture: true, signal: disposeSignal },
+	);
+	host.addEventListener("click", () => {
+		dragApis.get(host)?.onClear();
+	});
+	document.addEventListener(
+		"keydown",
+		(event) => {
+			if (event.key !== "Escape") {
+				return;
+			}
+			if (tracking) {
+				tracking = false;
+				moved = false;
+				releaseCapture();
+				suppressClick = true;
+				setTimeout(() => {
+					suppressClick = false;
+				}, 0);
+			}
+			const api = dragApis.get(host);
+			api?.onCancel();
+			api?.onClear();
+		},
+		{ signal: disposeSignal },
+	);
 }

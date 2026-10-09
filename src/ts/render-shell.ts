@@ -13,6 +13,7 @@ import {
 	togglePlay,
 	type Playback,
 } from "./playback";
+import type { LittlesLawSelection } from "./littles-law";
 import type { FlowTable } from "./parse-csv";
 import { renderBoard } from "./render-board";
 import { renderChart } from "./render-chart";
@@ -130,6 +131,9 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 	let playback: Playback = createPlayback(tableData.rows.length);
 	let hideDone = false;
 	let selection: Glow = { day: null, state: null, cardId: null };
+	let littlesLawSelection: LittlesLawSelection | null = null;
+	let littlesLawPreview: LittlesLawSelection | null = null;
+	const gestureAbort = new AbortController();
 	const main = el("div", "flex flex-1 gap-4 p-4");
 	main.append(stack, table);
 
@@ -155,9 +159,52 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 		paint();
 	}
 	function paint(): void {
-		renderChart(chart, root, tableData, playback.day, hideDone, selection, null, (pick) => {
-			choose({ day: pick.day, state: pick.state, cardId: null });
-		});
+		renderChart(
+			chart,
+			root,
+			tableData,
+			playback.day,
+			hideDone,
+			selection,
+			{
+				selection: littlesLawPreview ?? littlesLawSelection,
+				preview: littlesLawPreview !== null,
+				disposeSignal: gestureAbort.signal,
+				onPreview: (next) => {
+					if (
+						littlesLawPreview?.startDay === next.startDay &&
+						littlesLawPreview.endDay === next.endDay
+					) {
+						return;
+					}
+					littlesLawPreview = next;
+					paint();
+				},
+				onCommit: (next) => {
+					littlesLawSelection = next;
+					littlesLawPreview = null;
+					paint();
+				},
+				onCancel: () => {
+					if (littlesLawPreview === null) {
+						return;
+					}
+					littlesLawPreview = null;
+					paint();
+				},
+				onClear: () => {
+					if (littlesLawSelection === null && littlesLawPreview === null) {
+						return;
+					}
+					littlesLawSelection = null;
+					littlesLawPreview = null;
+					paint();
+				},
+			},
+			(pick) => {
+				choose({ day: pick.day, state: pick.state, cardId: null });
+			},
+		);
 		renderTable(table, tableData, playback.day, selection, (pick) => {
 			choose({ day: pick.day, state: pick.state, cardId: null });
 		});
@@ -232,6 +279,8 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 		sampleControl(loaded.sample.id, (id) => {
 			tableData = findSample(id).sample.table;
 			selection = { day: null, state: null, cardId: null };
+			littlesLawSelection = null;
+			littlesLawPreview = null;
 			apply(replaceLength(playback, tableData.rows.length));
 			onResize();
 		}),
@@ -252,5 +301,8 @@ export function renderShell(root: HTMLElement, config: CfdConfig, onResize: () =
 	footer.append(controls, copyright);
 
 	root.append(header, main, footer);
-	return clearTimer;
+	return () => {
+		clearTimer();
+		gestureAbort.abort();
+	};
 }
