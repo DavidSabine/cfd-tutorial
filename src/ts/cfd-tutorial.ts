@@ -43,6 +43,7 @@ function render(config: CfdConfig): void {
 	const container = match;
 	container.querySelector("[data-cfd-style]")?.remove();
 	container.querySelector(":scope > .cfd")?.remove();
+	container.querySelector(":scope > [data-cfd-loading]")?.remove();
 
 	const style = document.createElement("style");
 	style.dataset.cfdStyle = "";
