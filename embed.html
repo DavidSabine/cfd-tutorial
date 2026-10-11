@@ -1,4 +1,217 @@
-<div id="cfd-tutorial"></div>
+<style>
+	.cfd-loading {
+		position: relative;
+		box-sizing: border-box;
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+		background: #ffffff;
+		color: #1c1917;
+		font-family: ui-sans-serif, system-ui, sans-serif;
+	}
+
+	.cfd-loading * {
+		box-sizing: border-box;
+	}
+
+	.cfd-loading-label {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	.cfd-loading-header,
+	.cfd-loading-footer {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		padding: 0.75rem 1rem;
+	}
+
+	.cfd-loading-header {
+		border-bottom: 1px solid #e7e5e4;
+	}
+
+	.cfd-loading-footer {
+		border-top: 1px solid #e7e5e4;
+	}
+
+	.cfd-loading-main {
+		display: flex;
+		flex: 1 1 auto;
+		gap: 1rem;
+		min-height: 0;
+		padding: 1rem;
+	}
+
+	.cfd-loading-stack {
+		display: flex;
+		flex: 2 1 0;
+		flex-direction: column;
+		gap: 1rem;
+		min-width: 0;
+	}
+
+	.cfd-loading-chart,
+	.cfd-loading-board,
+	.cfd-loading-sheet {
+		border: 1px solid #e7e5e4;
+		border-radius: 0.375rem;
+	}
+
+	.cfd-loading-chart {
+		display: flex;
+		flex: 1 1 auto;
+		align-items: center;
+		justify-content: center;
+		min-height: 16rem;
+	}
+
+	.cfd-loading-board {
+		display: flex;
+		flex: 1 1 auto;
+		gap: 0.5rem;
+		min-height: 12rem;
+		padding: 0.5rem;
+	}
+
+	.cfd-loading-lane {
+		flex: 1 1 0;
+		min-width: 0;
+		border-radius: 0.375rem;
+		background: #f5f5f4;
+	}
+
+	.cfd-loading-sheet {
+		display: flex;
+		flex: 1 1 0;
+		flex-direction: column;
+		gap: 0.5rem;
+		min-width: 0;
+		padding: 0.5rem;
+	}
+
+	.cfd-loading-bar {
+		display: block;
+		height: 0.75rem;
+		border-radius: 0.375rem;
+		background: #f5f5f4;
+	}
+
+	.cfd-loading-bar.title {
+		width: 8rem;
+		height: 1.125rem;
+	}
+
+	.cfd-loading-bar.brand {
+		width: 5rem;
+		height: 0.875rem;
+	}
+
+	.cfd-loading-bar.head {
+		width: 70%;
+	}
+
+	.cfd-loading-bar.row {
+		width: 100%;
+	}
+
+	.cfd-loading-bar.status {
+		width: 6rem;
+	}
+
+	.cfd-loading-bar.copyright {
+		width: 8rem;
+	}
+
+	.cfd-loading-pills {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.cfd-loading-pill {
+		display: block;
+		width: 4rem;
+		height: 2.25rem;
+		border: 1px solid #e7e5e4;
+		border-radius: 0.375rem;
+		background: #f5f5f4;
+	}
+
+	.cfd-loading-spinner {
+		width: 1.25rem;
+		height: 1.25rem;
+		border: 2px solid #e7e5e4;
+		border-top-color: #1c1917;
+		border-radius: 50%;
+		animation: cfd-spin 0.8s linear infinite;
+	}
+
+	@keyframes cfd-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.cfd-loading-spinner {
+			animation: none;
+		}
+	}
+</style>
+<div id="cfd-tutorial">
+	<div class="cfd-loading" data-cfd-loading role="status">
+		<span class="cfd-loading-label">Loading Cumulative Flow</span>
+		<div class="cfd-loading-header" aria-hidden="true">
+			<span class="cfd-loading-bar title"></span>
+			<span class="cfd-loading-bar brand"></span>
+		</div>
+		<div class="cfd-loading-main">
+			<div class="cfd-loading-stack">
+				<div class="cfd-loading-chart" aria-hidden="true">
+					<span class="cfd-loading-spinner"></span>
+				</div>
+				<div class="cfd-loading-board" aria-hidden="true">
+					<span class="cfd-loading-lane"></span>
+					<span class="cfd-loading-lane"></span>
+					<span class="cfd-loading-lane"></span>
+					<span class="cfd-loading-lane"></span>
+				</div>
+			</div>
+			<div class="cfd-loading-sheet" aria-hidden="true">
+				<span class="cfd-loading-bar head"></span>
+				<span class="cfd-loading-bar row"></span>
+				<span class="cfd-loading-bar row"></span>
+				<span class="cfd-loading-bar row"></span>
+				<span class="cfd-loading-bar row"></span>
+				<span class="cfd-loading-bar row"></span>
+				<span class="cfd-loading-bar row"></span>
+			</div>
+		</div>
+		<div class="cfd-loading-footer" aria-hidden="true">
+			<div class="cfd-loading-pills">
+				<span class="cfd-loading-pill"></span>
+				<span class="cfd-loading-pill"></span>
+				<span class="cfd-loading-pill"></span>
+				<span class="cfd-loading-pill"></span>
+				<span class="cfd-loading-bar status"></span>
+			</div>
+			<span class="cfd-loading-bar copyright"></span>
+		</div>
+	</div>
+</div>
 
 <script>
 	window.CFD_CONFIG = {
