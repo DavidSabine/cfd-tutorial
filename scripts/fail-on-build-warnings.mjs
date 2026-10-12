@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 
 const pkg = JSON.parse(readFileSync("package.json", "utf8"));
-const bundle = `dist/cfd-tutorial-${pkg.version}.js`;
+const bundle = "dist/cfd-tutorial.js";
 const entry = `./${bundle}`;
 
 if (!existsSync(bundle)) {

@@ -16,13 +16,21 @@ Install it the usual way:
 npm install @davidsabine/cfd-tutorial
 ```
 
-The file you want is `node_modules/@davidsabine/cfd-tutorial/dist/cfd-tutorial-1.x.x.js`. You can leave it there and point a script tag at it, or copy that file into your own site and serve it yourself.
+The file you want is `node_modules/@davidsabine/cfd-tutorial/dist/cfd-tutorial.js`. You can leave it there and point a script tag at it, or copy that file into your own site and serve it yourself.
+
+You can also skip the install and load the newest 1.x release from the jsdelivr CDN:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/@davidsabine/cfd-tutorial@1/dist/cfd-tutorial.js"></script>
+```
+
+To stay on one release, put that version in place of `@1`. The file name does not change between releases. A comment at the top of the file names the version.
 
 The script runs as soon as the browser loads it. Put your `window.CFD_CONFIG` script before it. A normal `import` runs too early, before that config exists. Use a script tag, or set the config and then load it with `await import("@davidsabine/cfd-tutorial")`.
 
 ## Embed
 
-Paste this into your page and change the brand, copyright, and sample. The `div` is where the tool draws. The first script is your settings. The second script is the bundle. The third script makes the box tall enough for the chart.
+Paste this into your page and change the brand, copyright, and sample. The `div` is where the tool draws. The first script is your settings. The second script is the bundle. The third script makes the box tall enough for the chart. The sample expects the bundle on your site as `cfd-tutorial.js`. You can put the CDN address above in that same script tag instead.
 
 ```html
 <div id="cfd-tutorial"></div>
@@ -35,7 +43,7 @@ Paste this into your page and change the brand, copyright, and sample. The `div`
 		sample: "balanced-flow"
 	};
 </script>
-<script src="cfd-tutorial-1.0.0.js"></script>
+<script src="cfd-tutorial.js"></script>
 
 <script>
 	document.getElementById("cfd-tutorial").addEventListener("cfd-resize", (e) => {
